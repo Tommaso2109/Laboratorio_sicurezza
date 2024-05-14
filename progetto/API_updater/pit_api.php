@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-$url = "https://api.openf1.org/v1/race_control?meeting_key=latest"; // JSONPlaceholder API URL
+$url = "https://api.openf1.org/v1/pit?meeting_key=latest"; // JSONPlaceholder API URL
 
 print_r($url . "\n");
 // Initialize cURL
@@ -44,49 +44,35 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Prepara la query SQL
-$stmt = $conn->prepare("INSERT INTO flagsData (category, date, driver_number, flag, lap_number, meeting_key, message, scope, sector, session_key) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
 // Itera attraverso ogni elemento nell'array dei dati
 foreach ($data as $row) {
-    $driver_number = $row['driver_number'];
-    $message = $row['message'];
-
-    // Se driver_number è nullo, cerca di estrarre il numero del driver dal messaggio
-    if ($driver_number === null) {
-        if (preg_match('/CAR (\d+)/', $message, $matches)) {
-            $driver_number = $matches[1];
-        } else {
-            continue;
-        }
+    // Controlla se pit_duration è nullo
+    if (is_null($row['pit_duration'])) {
+        continue; // Salta questa iterazione se pit_duration è nullo
     }
 
-    
     $date = $row['date'];
+    $driver_number = $row['driver_number'];
     $lap_number = $row['lap_number'];
     $meeting_key = $row['meeting_key'];
+    $pit_duration = $row['pit_duration'];
     $session_key = $row['session_key'];
-    $category = $row['category'];
-    $flag = $row['flag'];
-    $scope = $row['scope'];
-    $sector = $row['sector'];
 
     // Prima di inserire, controlla se la session_key corrisponde a una sessione con nome 'Race'
     $checkSql = "SELECT * FROM sessioniData WHERE session_key = $session_key AND session_name = 'Race'";
     $checkResult = $conn->query($checkSql);
 
     if ($checkResult->num_rows > 0) {
-        // Se la session_key corrisponde a una sessione 'Race', inserisci i dati nel database
-        $stmt->bind_param("ssisissisi", $category, $date, $driver_number, $flag, $lap_number, $meeting_key, $message, $scope, $sector, $session_key);
-        if ($stmt->execute()) {
-            echo "New record created successfully";
-        } else {
-            echo "Error: " . $stmt->error;
+        // Query SQL per inserire i dati nel database
+        $sql = "INSERT INTO pitData (date, driver_number, lap_number, meeting_key, pit_duration, session_key) 
+                VALUES ('$date', $driver_number, $lap_number, $meeting_key, $pit_duration, $session_key)";
+
+        if ($conn->query($sql) === FALSE) {
+            echo "Error: " . $sql . "<br>" . $conn->error;
         }
     }
 }
 
-$stmt->close();
+
 // Chiudi la connessione
 $conn->close();

@@ -8,6 +8,7 @@
     <a href="statsApi.php" class="button">Stats</a>
     <a href="teamRadioApi.php" class="button">Radio</a>
     <a href="lapsApi.php" class="button">Laps</a>
+    <a href="flagApi.php" class="button">Flags</a>
 <?php
     // Database connection
     $db = new mysqli('localhost', 'root', '', 'statistiche');
