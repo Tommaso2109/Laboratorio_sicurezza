@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-$url = "https://api.openf1.org/v1/team_radio"; // JSONPlaceholder API URL
+$url = "https://api.openf1.org/v1/team_radio?meeting_key=latest"; // JSONPlaceholder API URL
 
 // Using cURL
 $ch = curl_init();
@@ -55,8 +55,16 @@ foreach ($latestItems as $item) {
     $date = $db->real_escape_string($item['date']);
     $recording_url = $db->real_escape_string($item['recording_url']);
 
-    $query = "INSERT INTO teamRadio (session_key, meeting_key, driver_number, date, recording_url) 
+    $query = "SELECT * FROM teamRadio WHERE recording_url = '$recording_url'";
+
+    $result = $db->query($query);
+
+    if ($result->num_rows > 0){
+        echo "The recording_url already exists in the database.";
+    }else{
+        $query = "INSERT INTO teamRadio (session_key, meeting_key, driver_number, date, recording_url) 
               VALUES ('$session_key', '$meeting_key', '$driver_number', '$date', '$recording_url')";
+    }
 
     if ($db->query($query) === TRUE) {
         echo "New record created successfully";

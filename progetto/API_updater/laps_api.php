@@ -60,13 +60,23 @@ foreach ($data as $row) {
     $duration_sector_2 = $row['duration_sector_2'];
     $duration_sector_3 = $row['duration_sector_3'];
     $lap_number = $row['lap_number'];
+    $is_pit_out_lap = $row['is_pit_out_lap'];
 
-    // Query SQL per inserire i dati nel database
-    $sql = "INSERT INTO lapsdata (meeting_key, session_key, driver_number, st_speed, lap_duration, duration_sector_1, duration_sector_2, duration_sector_3, lap_number) VALUES ('$meeting_key', '$session_key', '$driver_number', '$st_speed', '$lap_duration', '$duration_sector_1', '$duration_sector_2', '$duration_sector_3', '$lap_number')";
+    // Verifica se il record esiste già
+    $checkSql = "SELECT * FROM lapsdata WHERE meeting_key = '$meeting_key' AND session_key = '$session_key' AND driver_number = '$driver_number'";
+    $result = $conn->query($checkSql);
+
+    if ($result->num_rows > 0) {
+        // Il record esiste, quindi esegui un UPDATE
+        $sql = "UPDATE lapsdata SET st_speed = '$st_speed', lap_duration = '$lap_duration', duration_sector_1 = '$duration_sector_1', duration_sector_2 = '$duration_sector_2', duration_sector_3 = '$duration_sector_3', lap_number = '$lap_number', is_pit_out_lap = '$is_pit_out_lap' WHERE meeting_key = '$meeting_key' AND session_key = '$session_key' AND driver_number = '$driver_number'";
+    } else {
+        // Il record non esiste, quindi esegui un INSERT
+        $sql = "INSERT INTO lapsdata (meeting_key, session_key, driver_number, st_speed, lap_duration, duration_sector_1, duration_sector_2, duration_sector_3, lap_number, is_pit_out_lap) VALUES ('$meeting_key', '$session_key', '$driver_number', '$st_speed', '$lap_duration', '$duration_sector_1', '$duration_sector_2', '$duration_sector_3', '$lap_number', '$is_pit_out_lap')";
+    }
 
     // Esegui la query
     if ($conn->query($sql) === TRUE) {
-        echo "New record created successfully";
+        echo "Operation performed successfully";
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
