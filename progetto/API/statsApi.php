@@ -8,7 +8,6 @@
     <a href="statsApi.php" class="button">Stats</a>
     <a href="teamRadioApi.php" class="button">Radio</a>
     <a href="lapsApi.php" class="button">Laps</a>
-    <a href="flagApi.php" class="button">Flags</a>
     <table>
         <tr>
             <th>Full Name</th>
@@ -25,6 +24,7 @@
             die("Connection failed: " . $db->connect_error);
         }
 
+        // Get data from the database
         $result = $db->query("
         SELECT 
             t.full_name, 
@@ -34,31 +34,28 @@
         FROM (
             SELECT 
                 DriverData.full_name, 
-                pitData.pit_duration,
-                (SELECT COUNT(*) FROM pitData p WHERE p.driver_number = DriverData.driver_number AND p.meeting_key = (SELECT MAX(meeting_key) FROM pitData) AND p.pit_duration IS NOT NULL) as number_of_stops,
-                pitData.meeting_key
+                COUNT(carData.pit_duration) as number_of_stops,
+                AVG(carData.pit_duration) as pit_duration,
+                carData.meeting_key
             FROM 
                 DriverData 
             JOIN 
-                pitData 
+                carData 
             ON 
-                DriverData.driver_number = pitData.driver_number 
-            JOIN
-                sessioniData
-            ON
-                pitData.session_key = sessioniData.session_key
+                DriverData.driver_number = carData.driver_number 
             WHERE 
-                pitData.meeting_key = (SELECT MAX(meeting_key) FROM pitData)
-                AND pitData.pit_duration IS NOT NULL
-                AND sessioniData.session_name = 'Race'
+                carData.meeting_key = (SELECT MAX(meeting_key) FROM carData)
+                AND carData.pit_duration IS NOT NULL
             GROUP BY 
                 DriverData.full_name,
-                pitData.meeting_key
+                carData.meeting_key
         ) t
         JOIN 
             garedata g
         ON
             t.meeting_key = g.meeting_key
+        WHERE
+            t.pit_duration IS NOT NULL
         GROUP BY 
             t.full_name,
             g.meeting_name

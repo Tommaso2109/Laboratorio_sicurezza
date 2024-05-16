@@ -66,6 +66,7 @@ $scopes = 'user:email';
                 $('.button-login').on('click', function(e) {
                     e.preventDefault();
 
+
                     // Recupera i valori di username e password
                     var username = $('#username').val();
                     var password = $('#password').val();
