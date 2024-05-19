@@ -1,5 +1,150 @@
 <?php 
 session_start(); // Start the session at the beginning of your file 
+
+    function stampaTabellaLaps($pilota) {
+        $url = "http://localhost/login/API/laps.php?" . http_build_query(['pilota' => $pilota]);
+        $laps = file_get_contents($url);
+        
+        if ($laps !== false) {
+            $data = json_decode($laps, true);
+        
+            if ($data !== null) {
+                echo "<table class='responsive-table'>";
+                echo "<tr class='table-header'>";
+                echo "<th class='col col-1'>Media Settore 1</th>";
+                echo "<th class='col col-2'>Media Settore 2</th>";
+                echo "<th class='col col-3'>Media Settore 3</th>";
+                echo "<th class='col col-4'>Full Lap Durata Media</th>";
+                echo "<th>Lap Number</th>";
+                echo "</tr>";
+                
+                foreach ($data as $lap) {
+                    echo "<tr class ='table-row'>";
+                    echo "<td class='col col-1'>" . $lap['avg_duration_sector_1'] . " s </td>";
+                    echo "<td class='col col-2'>" . $lap['avg_duration_sector_2'] . " s </td>";
+                    echo "<td class='col col-3'>" . $lap['avg_duration_sector_3'] . " s </td>";
+                    echo "<td class='col col-4'>" . $lap['avg_lap_duration'] . " s </td>";
+                    echo "<td class='col col-4'>" . $lap['max_lap_number'] . "</td>";
+                    echo "</tr>";
+                }
+                echo "</table>";
+            }
+        }
+    }
+    function stampaTabellaRuote($pilota) {
+        $url = "http://localhost/login/API/ruote.php?" . http_build_query(['pilota' => $pilota]);
+        $ruote = file_get_contents($url);
+        
+        if ($ruote !== false) {
+            $data = json_decode($ruote, true);
+
+            if ($data !== null) {
+                echo "<table class='responsive-table'>";
+                echo "<tr class='table-header'>";
+                echo "<th class='col col-1'>Numero Giri per Ruota</th>";
+                echo "<th class='col col-2'>Tipo di Ruota</th>";
+                echo "</tr>";
+                foreach ($data[$pilota] as $stint_number => $ruota) {
+                    echo "<tr class='table-row'>";
+                    echo "<td class='col col-1'>" . $ruota['laps'] . "</td>"; // Mostrare il numero del giro
+                    echo "<td class='col col-2'>" . $ruota['compound'] . "</td>"; // Mostrare il composto della ruota
+                    echo "</tr>";
+                }
+                echo "</table>";
+            }
+            
+        }
+    }
+
+    function stampaTabellaPit($pilota) {
+        $url = "http://localhost/login/API/pit.php?" . http_build_query(['pilota' => $pilota]);
+        $pit = file_get_contents($url);
+        
+        if ($pit !== false) {
+            $data = json_decode($pit, true);
+        
+            if ($data !== null) {
+                echo "<table class='responsive-table'>";
+                echo "<tr class='table-header'>";
+                echo "<th class='col col-1'>Media Tempo in Pit Lane</th>";
+                echo "<th class='col col-2'>Numero Pit Stops</th>";
+                echo "<th class='col col-3'>Gran Prix</th>";
+                echo "</tr>";
+                foreach ($data as $row) {
+                    echo "<tr class='table-row'>";
+                    echo "<td class='col col-1'>" . $row['average_pit_duration'] . " s </td>";
+                    echo "<td class='col col-2'>" . $row['number_of_stops'] . "</td>";
+                    echo "<td class='col col-3'>" . $row['meeting_name'] . "</td>";
+                    echo "</tr>";
+                }
+                echo "</table>";
+            }
+        }
+    }
+    
+
+    function stampaTabellaRadio($pilota) {
+        $url = "http://localhost/login/API/radio.php?" . http_build_query(['pilota' => $pilota]);
+        $radio = file_get_contents($url);
+        
+        if ($radio !== false) {
+            $data = json_decode($radio, true);
+            if ($data !== null) {
+                $audioCount = 0;
+                foreach ($data as $row) {
+                    if (array_key_exists('recording_url', $row)) {
+                        $recording_urls = explode(',', $row['recording_url']);
+                        foreach ($recording_urls as $recording_url) {
+                            $recording_url .= '?' . time();
+                            echo '
+                                <iframe id="myIframe'.$audioCount.'" src="audioButton.html?audioId=myAudio'.$audioCount.'&recordingUrl='.urlencode($recording_url).'" style="border:none;width:100px;height:62px;"></iframe>
+                                <audio id="myAudio'.$audioCount.'" type="audio/mp3"></audio>
+                            ';
+                            $audioCount++;
+                        }
+                    } else {
+                        echo "No recording URLs found for driver: " . $row['full_name'];
+                    }
+                }
+            }
+ 
+        }
+    }
+    
+    
+    function stampaTabellaSettori($pilota) {
+        $url = "http://localhost/login/API/settori.php?" . http_build_query(['pilota' => $pilota]);
+        $settori = file_get_contents($url);
+        
+        if ($settori !== false) {
+            $data = json_decode($settori, true);
+        
+            if ($data !== null) {
+                if (empty($data)) {
+                    echo "<table class='responsive-table'>";
+                    echo "<tr class='table-header'>";
+                    echo "<th class='col col-1'>Infrazioni</th>";
+                    echo "</tr>";
+                    echo "<tr class='table-row'>";
+                    echo "<td class='col col-1'>Nessuna infrazione per Race Control</td>";
+                    echo "</tr>";
+                    echo "</table>";
+                } else {
+                    echo "<table class='responsive-table'>";
+                    echo "<tr class='table-header'>";
+                    echo "<th class='col col-1'>Infrazioni</th>";
+                    echo "</tr>";
+                    foreach ($data as $row) {
+                        echo "<tr class='table-row'>";
+                        echo "<td class='col col-1'>" . $row['message'] . "</td>";
+                        echo "</tr>";
+                    }
+                    echo "</table>";
+                }
+            }
+        }
+    }
+    
 ?>
 <!DOCTYPE html>
 <html lang="IT">
@@ -10,6 +155,7 @@ session_start(); // Start the session at the beginning of your file
         <title>FormulaForFun</title>
         <link rel="stylesheet" href="statisticheApiStyle.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.min.css" integrity="sha512-fJcFDOQo2+/Ke365m0NMCZt5uGYEWSxth3wg2i0dXu7A1jQfz9T4hdzz6nkzwmJdOdkcS8jmy2lWGaRXl+nFMQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     </head>
 
     
@@ -91,3569 +237,806 @@ session_start(); // Start the session at the beginning of your file
     <div class="mt-4">
         <div class="grid-container">
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
+                <div class="ruote-container">
+                    <div class="image-box">
+                        <img src="../media/versatppen.avif" alt="Driver Image">
+                    </div><?php $pilota = "Max VERSTAPPEN" ?>
+                    <div class="data-ruote">
                         <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
+                            stampaTabellaRadio($pilota);
                         ?>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
-                            <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
-                            ?>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
-                        </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
-                        </div>
-                    </div>
                 </div>
+                <div class="data1-box">
+                    <div class="column1">
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaLaps($pilota);
+                            ?>   
+                        </div>
+                    
+                        
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaPit($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaRuote($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php   
+                                stampaTabellaSettori($pilota);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="imageCar-box" class="width: 100%">
+                        <img src="../media/redbull-removebg-preview.png" alt="Driver Image">
+                    </div>
+                </div>               
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/perez.avif" alt="Driver Image">
+                        </div><?php $pilota = "Sergio PEREZ"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/redbull-removebg-preview.png" alt="Driver Image">
                         </div>
-                    </div>
-                </div>
+                    </div>    
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/hamilton.avif" alt="Driver Image">
+                        </div><?php $pilota = "Lewis HAMILTON"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/mercedes-removebg-preview.png" alt="Driver Image">
                         </div>
                     </div>
-                </div>
+                
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
+                <div class="ruote-container">
+                    <div class="image-box">
+                        <img src="../media/russel.avif" alt="Driver Image">
+                    </div><?php $pilota = "George RUSSELL" ?>
+                    <div class="data-ruote">
                         <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
+                            stampaTabellaRadio($pilota);
                         ?>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
-                            <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
-                            ?>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
-                        </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
-                        </div>
-                    </div>
                 </div>
+                <div class="data1-box">
+                    <div class="column1">
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaLaps($pilota);
+                            ?>   
+                        </div>
+                    
+                        
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaPit($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaRuote($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php   
+                                stampaTabellaSettori($pilota);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="imageCar-box" class="width: 100%">
+                        <img src="../media/mercedes-removebg-preview.png" alt="Driver Image">
+                    </div>
+                </div>               
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/leclerc.avif" alt="Driver Image">
+                        </div><?php $pilota = "Charles LECLERC"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div> 
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/ferrar-removebg-preview.png" alt="Driver Image">
                         </div>
-                    </div>
-                </div>
+                    </div>      
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/sainz.avif" alt="Driver Image">
+                        </div><?php $pilota = "Carlos SAINZ"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/ferrar-removebg-preview.png" alt="Driver Image">
                         </div>
                     </div>
-                </div>
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
+                <div class="ruote-container">
+                    <div class="image-box">
+                        <img src="../media/norris.avif" alt="Driver Image">
+                    </div><?php $pilota = "Lando NORRIS" ?>
+                    <div class="data-ruote">
                         <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
+                            stampaTabellaRadio($pilota);
                         ?>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
-                            <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
-                            ?>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
-                        </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
-                        </div>
-                    </div>
                 </div>
+                <div class="data1-box">
+                    <div class="column1">
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaLaps($pilota);
+                            ?>   
+                        </div>
+                    
+                        
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaPit($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaRuote($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php   
+                                stampaTabellaSettori($pilota);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="imageCar-box" class="width: 100%">
+                        <img src="../media/mclaren-removebg-preview.png" alt="Driver Image">
+                    </div>
+                </div>               
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/piastri.avif" alt="Driver Image">
+                        </div><?php $pilota = "Oscar PIASTRI"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/mclaren-removebg-preview.png" alt="Driver Image">
                         </div>
-                    </div>
-                </div>
+                    </div>    
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/alonso.avif" alt="Driver Image">
+                        </div><?php $pilota = "Fernando ALONSO"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/AstonMartin-removebg-preview.png" alt="Driver Image">
                         </div>
                     </div>
-                </div>
+                
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
+                <div class="ruote-container">
+                    <div class="image-box">
+                        <img src="../media/stroll.avif" alt="Driver Image">
+                    </div><?php $pilota = "Lance STROLL" ?>
+                    <div class="data-ruote">
                         <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
+                            stampaTabellaRadio($pilota);
                         ?>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
-                            <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
-                            ?>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
-                        </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
-                        </div>
-                    </div>
                 </div>
+                <div class="data1-box">
+                    <div class="column1">
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaLaps($pilota);
+                            ?>   
+                        </div>
+                    
+                        
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaPit($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaRuote($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php   
+                                stampaTabellaSettori($pilota);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="imageCar-box" class="width: 100%">
+                        <img src="../media/AstonMartin-removebg-preview.png" alt="Driver Image">
+                    </div>
+                </div>               
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/gasly.avif" alt="Driver Image">
+                        </div><?php $pilota = "Pierre GASLY"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div> 
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/alphine-removebg-preview.png" alt="Driver Image">
                         </div>
-                    </div>
-                </div>
+                    </div>      
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/ocon.avif" alt="Driver Image">
+                        </div><?php $pilota = "Esteban OCON"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/alphine-removebg-preview.png" alt="Driver Image">
                         </div>
                     </div>
-                </div>
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
+                <div class="ruote-container">
+                    <div class="image-box">
+                        <img src="../media/albon.avif" alt="Driver Image">
+                    </div><?php $pilota = "Alexander ALBON" ?>
+                    <div class="data-ruote">
                         <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
+                            stampaTabellaRadio($pilota);
                         ?>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
-                            <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
-                            ?>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
-                        </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
-                        </div>
-                    </div>
                 </div>
+                <div class="data1-box">
+                    <div class="column1">
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaLaps($pilota);
+                            ?>   
+                        </div>
+                    
+                        
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaPit($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaRuote($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php   
+                                stampaTabellaSettori($pilota);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="imageCar-box" class="width: 100%">
+                        <img src="../media/williams-removebg-preview.png" alt="Driver Image">
+                    </div>
+                </div>               
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/sargent.avif" alt="Driver Image">
+                        </div><?php $pilota = "Logan SARGEANT"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/williams-removebg-preview.png" alt="Driver Image">
                         </div>
-                    </div>
-                </div>
+                    </div>    
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/tunoda.avif" alt="Driver Image">
+                        </div><?php $pilota = "Yuki TSUNODA"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/alphatauri-removebg-preview.png" alt="Driver Image">
                         </div>
                     </div>
-                </div>
+                
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
+                <div class="ruote-container">
+                    <div class="image-box">
+                        <img src="../media/riccardo.avif" alt="Driver Image">
+                    </div><?php $pilota = "Daniel RICCIARDO" ?>
+                    <div class="data-ruote">
                         <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
+                            stampaTabellaRadio($pilota);
                         ?>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
-                            <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
-                            ?>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
-                        </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
-                        </div>
-                    </div>
                 </div>
+                <div class="data1-box">
+                    <div class="column1">
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaLaps($pilota);
+                            ?>   
+                        </div>
+                    
+                        
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaPit($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaRuote($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php   
+                                stampaTabellaSettori($pilota);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="imageCar-box" class="width: 100%">
+                        <img src="../media/alphatauri-removebg-preview.png" alt="Driver Image">
+                    </div>
+                </div>               
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/bottas.avif" alt="Driver Image">
+                        </div><?php $pilota = "Valtteri BOTTAS"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div> 
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/kik_saubern-removebg-preview.png" alt="Driver Image">
                         </div>
-                    </div>
-                </div>
+                    </div>      
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/zhou.avif" alt="Driver Image">
+                        </div><?php $pilota = "ZHOU Guanyu"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/kik_saubern-removebg-preview.png" alt="Driver Image">
                         </div>
                     </div>
-                </div>
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
+                <div class="ruote-container">
+                    <div class="image-box">
+                        <img src="../media/hulkenberg.avif" alt="Driver Image">
+                    </div><?php $pilota = "Nico HULKENBERG" ?>
+                    <div class="data-ruote">
                         <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
+                            stampaTabellaRadio($pilota);
                         ?>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
-                            <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
-                            ?>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
-                        </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
-                        </div>
-                    </div>
                 </div>
+                <div class="data1-box">
+                    <div class="column1">
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaLaps($pilota);
+                            ?>   
+                        </div>
+                    
+                        
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaPit($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php
+                                stampaTabellaRuote($pilota);
+                            ?>
+                        </div>
+                        <div class="data1-item">
+                            <?php   
+                                stampaTabellaSettori($pilota);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="imageCar-box" class="width: 100%">
+                        <img src="../media/haas-removebg-preview.png" alt="Driver Image">
+                    </div>
+                </div>               
             </div>
-
             <div class="container">
-                <div class="image-box">
-                    <img src="../media/versatppen.avif" alt="Driver Image">
-                </div>
-                <?php $pilota = "Max VERSTAPPEN" ?>
-                <div class="data-box">
-                    <div class="data-item">
-                        Laps: 
-                        <?php
-                            // Database connection
-                            $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                            // Check connection
-                            if ($db->connect_error) {
-                                die("Connection failed: " . $db->connect_error);
-                            }
-
-                            // Get specific data from the database for each driver_number
-                            $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                            $result = $db->query("
-                                SELECT
-                                    driverdata.full_name,
-                                    ROUND(AVG(random_lapsdata.duration_sector_1), 2) AS avg_duration_sector_1,
-                                    ROUND(AVG(random_lapsdata.duration_sector_2), 2) AS avg_duration_sector_2,
-                                    ROUND(AVG(random_lapsdata.duration_sector_3), 2) AS avg_duration_sector_3,
-                                    ROUND(AVG(random_lapsdata.lap_duration), 2) AS avg_lap_duration,
-                                    MAX(random_lapsdata.lap_number) AS max_lap_number
-                                FROM
-                                    (SELECT * FROM lapsdata WHERE duration_sector_1 IS NOT NULL AND duration_sector_2 IS NOT NULL AND duration_sector_3 IS NOT NULL AND lap_duration IS NOT NULL AND lap_number IS NOT NULL ORDER BY RAND()) AS random_lapsdata
-                                JOIN
-                                    driverdata ON random_lapsdata.driver_number = driverdata.driver_number
-                                WHERE
-                                    driverdata.full_name = '$pilota'
-                                GROUP BY
-                                    driverdata.full_name
-                                ORDER BY 
-                                    avg_lap_duration
-                            ");
-
-                            // Check if the query was successful
-                            if ($result === false) {
-                                die("Query failed: " . $db->error);
-                            }
-
-                            echo "<table border='1'>";
-                            echo "<tr>";
-                            echo "<th>Pilota</th>";
-                            echo "<th>Duration Sector 1</th>";
-                            echo "<th>Duration Sector 2</th>";
-                            echo "<th>Duration Sector 3</th>";
-                            echo "<th>Lap Duration</th>";
-                            echo "<th>Lap Number</th>";
-                            echo "</tr>";
-
-                            // Fetch each row of results into an array
-                            $data = array();
-                            while ($row = $result->fetch_assoc()) {
-                                $data[] = $row;
-                                echo "<tr>";
-                                echo "<td>" . $row['full_name'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_1'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_2'] . "</td>";
-                                echo "<td>" . $row['avg_duration_sector_3'] . "</td>";
-                                echo "<td>" . $row['avg_lap_duration'] . "</td>";
-                                echo "<td>" . $row['max_lap_number'] . "</td>";
-                                echo "</tr>";
-                            }
-
-                            echo "</table>";
-
-                            // Close the database connection
-                            $db->close();
-                        ?>
-                    </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Ruote: 
+                <div class="ruote-container">
+                        <div class="image-box">
+                            <img src="../media/magnussen.avif" alt="Driver Image">
+                        </div><?php $pilota = "Kevin MAGNUSSEN"?>
+                        <div class="data-ruote">
                             <?php
-                                // Database connection
-                                $db = new mysqli('localhost', 'root', '', 'statistiche');
-
-                                // Check connection
-                                if ($db->connect_error) {
-                                    die("Connection failed: " . $db->connect_error);
-                                }
-
-                                // Get data from the database
-                                $pilota = $db->real_escape_string($pilota); // Assicurati che la variabile sia sicura per l'uso in una query SQL
-
-                                $result = $db->query("
-                                    SELECT
-                                        t2.full_name,
-                                        t1.stint_number,
-                                        t1.lap_start,
-                                        t1.lap_end,
-                                        t1.compound,
-                                        t3.session_name,
-                                        t1.session_key
-                                    FROM
-                                        ruotedata AS t1
-                                    JOIN
-                                        driverdata AS t2
-                                    ON
-                                        t1.driver_number = t2.driver_number
-                                    JOIN
-                                        sessionidata AS t3
-                                    ON
-                                        t1.session_key = t3.session_key
-                                    WHERE
-                                        t3.session_name = 'Race'
-                                        AND t2.full_name = '$pilota'
-                                        AND t3.meeting_key = (
-                                            SELECT MAX(meeting_key) FROM sessionidata
-                                        )
-                                    ORDER BY
-                                        t2.full_name,
-                                        t1.stint_number
-                                ");
-
-                                // Check if the query was successful
-                                if ($result === false) {
-                                die("Query failed: " . $db->error);
-                                }
-
-                                // Fetch the results into an associative array
-                                $data = [];
-                                while($row = $result->fetch_assoc()) {
-                                    $data[$row['full_name']][$row['stint_number']] = [
-                                        'laps' => $row['lap_start'] . ' - ' . $row['lap_end']. ' (Type: ' . $row['compound'] . ')',
-                                        'session_key' => $row['session_key'],
-                                        'session_name' => $row['session_name']
-                                    ];
-                                }
-
-                                // Print the table header
-                                echo "<table style='border-spacing: 10px;'>";
-                                echo "<tr>";
-                                echo "<th style='padding: 10px;'></th>";
-                                for ($i = 1; $i <= max(array_map('count', $data)); $i++) {
-                                    echo "<th style='padding: 10px;'></th>";
-                                }
-                                echo "</tr>";
-
-                                // Print each row of the table
-                                foreach ($data as $fullName => $stints) {
-                                    echo "<tr>";
-                                    echo "<td style='padding: 10px;'>" . $fullName . "</td>";
-                                    foreach ($stints as $stintNumber => $stintData) {
-                                        $laps = str_replace($stintData['session_name'], $stintData['session_key'], $stintData['laps']);
-                                        echo "<td style='padding: 10px;'>" . $laps . "</td>";
-                                    }
-                                    echo "</tr>";
-                                }
-                                echo "</table>";
-
-                                // Close the database connection
-                                $db->close();
-                            ?>
-                        </div>
-                        <div class="data-item">
-                            Pit: 
-                            <?php
-                            
+                                stampaTabellaRadio($pilota);
                             ?>
                         </div>
                     </div>
-                    <div class="column">
-                        <div class="data-item">
-                            Radio: <span id="radio-data"></span>
+                    <div class="data1-box">
+                        <div class="column1">
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaLaps($pilota);
+                                ?>   
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaPit($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php
+                                    stampaTabellaRuote($pilota);
+                                ?>
+                            </div>
+                            <div class="data1-item">
+                                <?php   
+                                    stampaTabellaSettori($pilota);
+                                ?>
+                            </div>
                         </div>
-                        <div class="data-item">
-                            Settori: <span id="settori-data"></span>
+                        <div class="imageCar-box" class="width: 100%">
+                            <img src="../media/haas-removebg-preview.png" alt="Driver Image">
                         </div>
-                    </div>
-                </div>
+                    </div>    
             </div>
-
-            
 
         </div>
     </div>
+    
     <footer class="footer mt-1">        
         <div class="col">
             <h3 class="medium-text">Contatti </h3>
