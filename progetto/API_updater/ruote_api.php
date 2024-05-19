@@ -12,7 +12,7 @@ $response = curl_exec($ch);
 
 if (curl_errno($ch)) {
     // cURL error
-    echo 'cURL error: ' . curl_error($ch);
+    //echo 'cURL error: ' . curl_error($ch);
 } else {
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($status >=200 && $status < 300) {
@@ -45,12 +45,12 @@ if (curl_errno($ch)) {
         });
 
         // Print all items with a meeting_key in $meeting_keys
-        echo '<pre>';
-        print_r($filtered_data);
-        echo '</pre>';
+        //echo '<pre>';
+        //print_r($filtered_data);
+        //echo '</pre>';
     } else {
         // Error occurred
-        echo "Error occurred: $status";
+        //echo "Error occurred: $status";
     }
 }
 
@@ -62,7 +62,15 @@ if ($db->connect_error) {
 }
 
 // Prepare an SQL statement
-$stmt = $db->prepare("INSERT INTO ruotedata (meeting_key, session_key, stint_number, driver_number, lap_start, lap_end, compound, tyre_age_at_start) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt = $db->prepare("
+    INSERT INTO ruotedata (meeting_key, session_key, stint_number, driver_number, lap_start, lap_end, compound, tyre_age_at_start) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        lap_start = VALUES(lap_start),
+        lap_end = VALUES(lap_end),
+        compound = VALUES(compound),
+        tyre_age_at_start = VALUES(tyre_age_at_start)
+");
 
 // Bind parameters
 $stmt->bind_param("iiiisssi", $meeting_key, $session_key, $stint_number, $driver_number, $lap_start, $lap_end, $compound, $tyre_age_at_start);
@@ -80,7 +88,7 @@ foreach ($filtered_data as $item) {
 
     // Execute the statement
     if (!$stmt->execute()) {
-        echo "Error: " . $stmt->error;
+        //echo "Error: " . $stmt->error;
     }
 }
 

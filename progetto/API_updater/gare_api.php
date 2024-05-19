@@ -12,7 +12,7 @@ $response = curl_exec($ch);
 
 if (curl_errno($ch)) {
     // cURL error
-    echo 'cURL error: ' . curl_error($ch);
+    //echo 'cURL error: ' . curl_error($ch);
 } else {
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($status >=200 && $status < 300) {
@@ -24,15 +24,13 @@ if (curl_errno($ch)) {
             return date('Y', strtotime($item['date_start'])) == '2024';
         });
 
-        
-
         // Print all items with the highest meeting_key
-        echo '<pre>';
-        print_r($data);
-        echo '</pre>';
+        //echo '<pre>';
+        //print_r($data);
+        //echo '</pre>';
     } else {
         // Error occurred
-        echo "Error occurred: $status";
+        //echo "Error occurred: $status";
     }
 }
 
@@ -40,7 +38,7 @@ if (curl_errno($ch)) {
 $db = new mysqli('localhost', 'root', '', 'statistiche');
 
 if ($db->connect_error) {
-    die("Connection failed: " . $db->connect_error);
+    //die("Connection failed: " . $db->connect_error);
 }
 
 // Insert data into table
@@ -59,12 +57,24 @@ foreach ($data as $item) {
     $year = $db->real_escape_string($item['year']);
 
     $query = "INSERT INTO garedata (circuit_key, circuit_short_name, meeting_key, meeting_code, location, country_key, country_code, country_name, meeting_name, gmt_offset, date_start, year) 
-              VALUES ('$circuit_key', '$circuit_short_name', '$meeting_key', '$meeting_code', '$location', '$country_key', '$country_code', '$country_name', '$meeting_name', '$gmt_offset', '$date_start', '$year')";
+              VALUES ('$circuit_key', '$circuit_short_name', '$meeting_key', '$meeting_code', '$location', '$country_key', '$country_code', '$country_name', '$meeting_name', '$gmt_offset', '$date_start', '$year')
+              ON DUPLICATE KEY UPDATE
+              circuit_key = VALUES(circuit_key),
+              circuit_short_name = VALUES(circuit_short_name),
+              meeting_code = VALUES(meeting_code),
+              location = VALUES(location),
+              country_key = VALUES(country_key),
+              country_code = VALUES(country_code),
+              country_name = VALUES(country_name),
+              meeting_name = VALUES(meeting_name),
+              gmt_offset = VALUES(gmt_offset),
+              date_start = VALUES(date_start),
+              year = VALUES(year)";
 
     if ($db->query($query) === TRUE) {
-        echo "New record created successfully";
+        //echo "New record created or updated successfully";
     } else {
-        echo "Error: " . $query . "<br>" . $db->error;
+        //echo "Error: " . $query . "<br>" . $db->error;
     }
 }
 

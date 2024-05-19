@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-$url = "https://api.openf1.org/v1/team_radio"; // JSONPlaceholder API URL
+$url = "https://api.openf1.org/v1/team_radio?meeting_key=latest"; // JSONPlaceholder API URL
 
 // Using cURL
 $ch = curl_init();
@@ -12,7 +12,7 @@ $response = curl_exec($ch);
 
 if (curl_errno($ch)) {
     // cURL error
-    echo 'cURL error: ' . curl_error($ch);
+    //echo 'cURL error: ' . curl_error($ch);
 } else {
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($status >=200 && $status < 300) {
@@ -31,12 +31,12 @@ if (curl_errno($ch)) {
         $latestItems = array_values($latestItems);
     
         // Print all items with the highest meeting_key
-        echo '<pre>';
-        print_r($latestItems);
-        echo '</pre>';
+        //echo '<pre>';
+        //print_r($latestItems);
+        //echo '</pre>';
     } else {
         // Error occurred
-        echo "Error occurred: $status";
+        //echo "Error occurred: $status";
     }
 }
 
@@ -47,6 +47,8 @@ if ($db->connect_error) {
     die("Connection failed: " . $db->connect_error);
 }
 
+ 
+
 // Insert data into table
 foreach ($latestItems as $item) {
     $session_key = $db->real_escape_string($item['session_key']);
@@ -56,12 +58,17 @@ foreach ($latestItems as $item) {
     $recording_url = $db->real_escape_string($item['recording_url']);
 
     $query = "INSERT INTO teamRadio (session_key, meeting_key, driver_number, date, recording_url) 
-              VALUES ('$session_key', '$meeting_key', '$driver_number', '$date', '$recording_url')";
+              VALUES ('$session_key', '$meeting_key', '$driver_number', '$date', '$recording_url')
+              ON DUPLICATE KEY UPDATE
+                  session_key = VALUES(session_key),
+                  meeting_key = VALUES(meeting_key),
+                  driver_number = VALUES(driver_number),
+                  date = VALUES(date)";
 
     if ($db->query($query) === TRUE) {
-        echo "New record created successfully";
+        //echo "New record created successfully";
     } else {
-        echo "Error: " . $query . "<br>" . $db->error;
+        //echo "Error: " . $query . "<br>" . $db->error;
     }
 }
 

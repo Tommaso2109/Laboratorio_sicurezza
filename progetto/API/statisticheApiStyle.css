@@ -421,7 +421,6 @@ body::-webkit-scrollbar{
     background-color: #000;
     width: auto;
     height: fit-content;
-
 }
 
 .image-box {
@@ -442,7 +441,6 @@ body::-webkit-scrollbar{
     width: 400px; /* Set a specific width */
     height: 400px; /* Set a specific height */
     object-fit: cover; /* Mantiene le proporzioni dell'immagine */
-
 }
 
 .data-box {
@@ -457,6 +455,7 @@ body::-webkit-scrollbar{
 .data-item {
     margin: 10px 0;
 }
+
 
 .responsive-table {
     li {
@@ -567,7 +566,6 @@ body::-webkit-scrollbar{
     }
 
 }
-
 
 /*footer*/
 footer {
