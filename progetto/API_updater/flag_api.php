@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 
 $url = "https://api.openf1.org/v1/race_control?meeting_key=latest"; // JSONPlaceholder API URL
 
-print_r($url . "\n");
+//print_r($url . "\n");
 // Initialize cURL
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
@@ -18,21 +18,21 @@ $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 if (curl_errno($ch)) {
     // cURL error
-    echo 'cURL error: ' . curl_error($ch);
+    //echo 'cURL error: ' . curl_error($ch);
 } else {
     if ($status >= 200 && $status < 300) {
         // Successful response
         $data = json_decode($response, true); // Assuming the API returns a JSON
 
         // Print the data
-        echo "Decoded Data: <br>";
-        echo '<pre>';
-        print_r($data);
-        echo '</pre>';
+        //echo "Decoded Data: <br>";
+        //echo '<pre>';
+        //print_r($data);
+        //echo '</pre>';
     } elseif ($status == 500) {
-        echo "The server encountered an internal error. Please try again later.";
+        //echo "The server encountered an internal error. Please try again later.";
     } else {
-        echo "An error occurred. HTTP Status Code: " . $status;
+        //echo "An error occurred. HTTP Status Code: " . $status;
     }
 }
 
@@ -45,8 +45,20 @@ if ($conn->connect_error) {
 }
 
 // Prepara la query SQL
-$stmt = $conn->prepare("INSERT INTO flagsData (category, date, driver_number, flag, lap_number, meeting_key, message, scope, sector, session_key) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+// Prepara la query SQL
+$stmt = $conn->prepare("
+    INSERT INTO flagsData (category, date, driver_number, flag, lap_number, meeting_key, message, scope, sector, session_key)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+        category = VALUES(category),
+        date = VALUES(date),
+        flag = VALUES(flag),
+        lap_number = VALUES(lap_number),
+        meeting_key = VALUES(meeting_key),
+        message = VALUES(message),
+        scope = VALUES(scope),
+        sector = VALUES(sector)
+");
 
 // Itera attraverso ogni elemento nell'array dei dati
 foreach ($data as $row) {
@@ -77,12 +89,12 @@ foreach ($data as $row) {
     $checkResult = $conn->query($checkSql);
 
     if ($checkResult->num_rows > 0) {
-        // Se la session_key corrisponde a una sessione 'Race', inserisci i dati nel database
+        // Se la session_key corrisponde a una sessione 'Race', inser i dati nel database
         $stmt->bind_param("ssisissisi", $category, $date, $driver_number, $flag, $lap_number, $meeting_key, $message, $scope, $sector, $session_key);
         if ($stmt->execute()) {
-            echo "New record created successfully";
+            //echo "New record created or updated successfully";
         } else {
-            echo "Error: " . $stmt->error;
+            //echo "Error: " . $stmt->error;
         }
     }
 }

@@ -1,5 +1,6 @@
 <?php 
 session_start(); // Start the session at the beginning of your file 
+require 'API_updater/tableUpdater.php';
 ?>
 
 <!DOCTYPE php>
@@ -397,26 +398,8 @@ session_start(); // Start the session at the beginning of your file
                                             }
                                         }
         echo '                          </table>
-                                    </div>';
-                                   // Ottieni il valore del campo moderatore per l'utente corrente
-                                   $sql = "SELECT moderatore FROM utenti WHERE username = ?";
-                                   $stmt = $conn->prepare($sql);
-                                   $stmt->bind_param('s', $user);
-                                   $stmt->execute();
-                                   $result = $stmt->get_result();
-                                   $row = $result->fetch_assoc();
-   
-                                   $moderatore = $row['moderatore'];
-   
-                                   // Esegui un'azione diversa in base al valore di moderatore
-                                   if ($moderatore == 0) {
-                                       // Esegui un'azione quando moderatore è 0
-                                       echo '<li><a href="segnala_utenti.php" class="button3">SEGNALA UTENTI</a></li>';
-                                   } else if ($moderatore == 1) {
-                                       // Esegui un'azione quando moderatore è 1
-                                       echo '<li><a href="ban_utenti.php" class="button3">BANNA UTENTI</a></li>';
-                                   };      
-           echo                 '</div>
+                                    </div>
+                            </div>
                 
                             </div>
                             <div class="grid-container-squad">
@@ -600,6 +583,15 @@ session_start(); // Start the session at the beginning of your file
                     threeDaysAfter.setDate(threeDaysAfter.getDate() + 3);
                     console.log("Now: " + now + "Tempo Rimanente: " + timeLeft + "Tre giorni rimanenti: "+ threeDaysAfter);
                     if (now >= threeDaysAfter) {
+
+                        require 'API_updater/flag_api.php';
+                        require 'API_updater/gare_api.php';
+                        require 'API_updater/laps_api.php';
+                        require 'API_updater/pit_api.php';
+                        require 'API_updater/ruote_api.php';
+                        require 'API_updater/sessioni_api.php';
+                        require 'API_updater/team_radio.php';
+
                         var xhr = new XMLHttpRequest();
                         xhr.open("GET", "deletePrevGara.php", true);
                         xhr.send();

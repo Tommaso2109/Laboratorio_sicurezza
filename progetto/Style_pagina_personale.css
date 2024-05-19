@@ -39,21 +39,6 @@ body::-webkit-scrollbar{
     text-decoration: none;
 }
 
-.button3{
-    padding: 15px 15px; 
-    background: rgb(255, 255, 255); 
-    color: rgb(0, 0, 0); 
-    border-radius: 4px;
-    display: inline-block;
-    text-decoration: none;
-
-}
-.button3:hover{
-    background-color:rgba(255, 0, 0, 0.87);
-    color: #ffffff;
-    text-decoration: none;
-}
-
 .logo2 {
     transform: scale(0.6) translateY(-35px);
     margin-top: -40px;
@@ -369,8 +354,7 @@ body::-webkit-scrollbar{
 
 .grid-container-squad {
     display: grid;
-    grid-template-rows: 35.5% 27.5% 37%;
-    overflow: auto;
+    grid-template-rows: 30% 30% 40%;
 }
 
 .grid-container-squad-interno {
@@ -381,27 +365,24 @@ body::-webkit-scrollbar{
 
 .grid-container-piloti{
     display: grid;
-    grid-template-rows: 80% 20%;
+    grid-template-rows: 70% 10%;
     grid-template-columns: 50% 50%;
     border: 2px solid gray;
-    height: 88%;
-    ;
     
 }
 
 .grid-container-scuderie{
     display: grid;
-    grid-template-rows: 70% 30%;
+    grid-template-rows: 70% 10%;
     grid-template-columns: 1fr;
     border: 2px solid gray;
-    height: 88%;
     
 }
 
 .grid-container-punti{
     display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: 1fr;
+    grid-template-rows: 100%;
+    grid-template-columns: 100%;
     border: 2px solid gray;
     
 }
@@ -515,8 +496,8 @@ body::-webkit-scrollbar{
 
 table{
     width: 98%;
-    height: auto;
-    table-layout:auto;
+    height: 50%;
+    table-layout: fixed;
     margin-left: 1%;
     border-collapse: separate;
     border-spacing: 0 15px;
@@ -542,8 +523,7 @@ table tr {
 }
 
 .button-rm{
-  margin-bottom: -1px;
-    
+    margin-top: 40%;
 
 }
 
@@ -562,11 +542,6 @@ table tr {
         font-size: 30px;
     }
 
-    .grid-container-squad-interno{
-        grid-template-columns: 1fr;
-        grid-template-rows:80% 80%;
-    }
-
     .grid-container-piloti{
         display: grid;
         grid-template-rows: 70% 30%;
@@ -577,14 +552,14 @@ table tr {
     
     .grid-container-scuderie{
         display: grid;
+        grid-template-rows: 70% 30%;
         grid-template-columns: 1fr;
-        grid-template-rows: 60% 40%;
         border: 2px solid gray;
         
     }
 
     .grid-container-punti{
-        margin-top: 103px;
+        margin-top: 25px;
         display: grid;
         grid-template-rows: 1fr;
         grid-template-columns: 1fr;
@@ -592,7 +567,7 @@ table tr {
     }
 
     .info{
-        font-size: 20px;
+        font-size: 25px;
         color: white;
         margin-top: 10px;
     }
@@ -640,7 +615,6 @@ table tr {
     
     
 }
-
 
 
 /*footer*/

@@ -18,30 +18,41 @@
     // Get data from the database
     $result = $db->query("
         SELECT DISTINCT
-            filtered.driver_number,
-            filtered.recording_url,
+            t1.driver_number,
+            t1.recording_url,
             t2.full_name
         FROM
-            (
-                SELECT
-                    t1.driver_number,
-                    t1.recording_url
-                FROM
-                    teamRadio AS t1
-                JOIN
-                    sessioniData AS t3
-                ON
-                    t1.session_key = t3.session_key
-                WHERE
-                    t3.session_name = 'Race'
-            ) AS filtered
+            teamRadio AS t1
         JOIN
             driverdata AS t2
         ON
-            filtered.driver_number = t2.driver_number
+            t1.driver_number = t2.driver_number
         WHERE
             t2.full_name = '$pilota'
-    ");
+        AND
+            t1.meeting_key = (
+                SELECT 
+                    meeting_key
+                FROM 
+                    sessioniData
+                ORDER BY 
+                    meeting_key DESC
+                LIMIT 1
+            )
+        AND 
+            t1.session_key = (
+                SELECT 
+                    session_key
+                FROM 
+                    sessioniData
+                WHERE 
+                    session_name = 'Race' AND meeting_key = t1.meeting_key
+                ORDER BY 
+                    session_key ASC
+                LIMIT 1
+            )
+            LIMIT 8
+");
 
     // Check if the query was successful
     if ($result === false) {
