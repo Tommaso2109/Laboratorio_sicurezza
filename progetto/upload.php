@@ -31,6 +31,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (move_uploaded_file($uploadedFile["tmp_name"], $targetFile)) {
                 echo "L'immagine ". basename($uploadedFile["name"]). " è stata caricata.";
 
+                // Aggiungi qui le directory aggiuntive in cui desideri salvare l'immagine
+                $additionalDirectories = ["scuderie/uploads/", "piloti/uploads/", "API/uploads/"];
+
+                foreach ($additionalDirectories as $directory) {
+                    // Crea la directory se non esiste
+                    if (!file_exists($directory)) {
+                        mkdir($directory, 0777, true);
+                    }
+
+                    // Copia il file nella directory
+                    if (copy($targetFile, $directory . basename($uploadedFile["name"]))) {
+                        echo "L'immagine ". basename($uploadedFile["name"]). " è stata copiata in " . $directory;
+                    } else {
+                        echo "Non è stato possibile copiare l'immagine in " . $directory;
+                    }
+                }
+
+
                 // Aggiorna il database con il percorso dell'immagine
                 $username = $_SESSION['username'];
                 $stmt = $db->prepare("UPDATE utenti SET profile_image = ? WHERE username = ?");
