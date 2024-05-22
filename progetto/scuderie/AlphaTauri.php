@@ -22,7 +22,7 @@ session_start(); // Start the session at the beginning of your file
 
         <ul class="menu">
             <?php if(isset($_SESSION['username'])): ?>
-                <li><a href="../pagina_personale.php" id="userImage"><img src="../<?php echo $_SESSION['profile_image']; ?>" alt="image"></a></li>
+                <li><a href="../pagina_personale.php" id="userImage"><img src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a></li>
                 <label><a href="../logout.php" id="logoutButton" class="menu-text">LOGOUT</a></label>
             <?php else: ?>
                 <label><a href="../login.html" id="loginButton" class="menu-text">LOGIN</a></label>
@@ -74,7 +74,7 @@ session_start(); // Start the session at the beginning of your file
 
         <div class="r-l">
         <?php if(isset($_SESSION['username'])): ?>
-                    <a href="../pagina_personale.php" id="userImage"><img  src="../<?php echo $_SESSION['profile_image']; ?>" alt="image"></a>
+                    <a href="../pagina_personale.php" id="userImage"><img  src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a>
                     <a href="../logout.php" id="logoutButton" class="button">LOGOUT</a>
                 <?php else: ?>
                     <a href="../login.html" id="loginButton" class="button">LOGIN</a>
