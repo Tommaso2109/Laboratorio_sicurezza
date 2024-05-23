@@ -15,7 +15,7 @@ session_start(); // Start the session at the beginning of your file
                 echo "<th class='col col-2'>Media Settore 2</th>";
                 echo "<th class='col col-3'>Media Settore 3</th>";
                 echo "<th class='col col-4'>Full Lap Durata Media</th>";
-                echo "<th>Lap Number</th>";
+                echo "<th class='col col-5'>Lap Number</th>";
                 echo "</tr>";
                 
                 foreach ($data as $lap) {

@@ -1,3 +1,4 @@
+
 .big-text{font-size: 70px;font-weight: 900;}
 .alf-big-text{font-size: 50px;font-weight: 900;}
 .menu-text{font-size: 30px; font-weight: 700;}
@@ -274,7 +275,7 @@ body::-webkit-scrollbar{
 
 @media(max-width:900px){
     .r-l{display: none}
-    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 350%;z-index: 2;}
+    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 230%;z-index: 2;}
     .menu li {display: block;}
     .menu li a{display: block;}
     .menu li span{display: none;}
@@ -297,7 +298,7 @@ body::-webkit-scrollbar{
         display: block;
         width: 20%;
         height: auto;
-        border-radius: 20px;
+
     }
 }
 
@@ -481,7 +482,7 @@ body::-webkit-scrollbar{
     .col{
         text-align: center;
     }
-    .col-1, .col-2, .col-3, .col-4 {
+    .col-1, .col-2, .col-3, .col-4, .col-5 {
         width: 22.5%; 
     }
     border-radius: 30%;
@@ -530,6 +531,41 @@ body::-webkit-scrollbar{
     width: 100%; 
     height: auto;
 }
+@media(max-width:900px){
+
+    .container{
+        flex-direction: column;
+    }
+
+    .image-box img{
+        width: 300px;
+        height: 300px;
+    }
+
+    .data-ruote{
+        padding: 0%;
+        margin: 0;
+        width: 80%;
+    }
+
+    .data1-item{
+        width: 130%;
+    }
+
+    .imageCar-box{
+        width: 143%;
+    }
+
+    .responsive-table {
+        
+        .col-1, .col-2, .col-3, .col-4,.col-5 {
+            width: 22.5%; 
+            font-size: 13px;
+        }
+        
+    }
+
+}
 
 /*footer*/
 footer {
@@ -556,7 +592,3 @@ footer {
 .mt-2{margin-top: 100px;}
 .mt-3{margin-top: 150px;}
 .mt-4{margin-top: 250px;}
-
-
-
-

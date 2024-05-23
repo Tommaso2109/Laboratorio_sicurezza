@@ -173,6 +173,18 @@ require 'API_updater/tableUpdater.php';
             if($scuderia == "Kick Saubern")$immagineScuderia = 'kicksaubern-removebg-preview.png';
             if($scuderia == "Haas")$immagineScuderia = 'haas-removebg-preview.png';
 
+            // Dividi il nome e il cognome
+            $parts1 = explode(" ", $pilota1);
+            $parts2 = explode(" ", $pilota2);
+
+            // Converte il cognome in maiuscolo
+            $parts1[1] = strtoupper($parts1[1]);
+            $parts2[1] = strtoupper($parts2[1]);
+
+            // Ricombina il nome e il cognome
+            $pilota1 = implode(" ", $parts1);
+            $pilota2 = implode(" ", $parts2);
+
             //Punteggi
             $puntiPilota1Gara = "0";
             $puntiPilota2Gara = "0";
@@ -584,14 +596,6 @@ require 'API_updater/tableUpdater.php';
                     console.log("Now: " + now + "Tempo Rimanente: " + timeLeft + "Tre giorni rimanenti: "+ threeDaysAfter);
                     if (now >= threeDaysAfter) {
 
-                        require 'API_updater/flag_api.php';
-                        require 'API_updater/gare_api.php';
-                        require 'API_updater/laps_api.php';
-                        require 'API_updater/pit_api.php';
-                        require 'API_updater/ruote_api.php';
-                        require 'API_updater/sessioni_api.php';
-                        require 'API_updater/team_radio.php';
-
                         var xhr = new XMLHttpRequest();
                         xhr.open("GET", "deletePrevGara.php", true);
                         xhr.send();
@@ -600,6 +604,11 @@ require 'API_updater/tableUpdater.php';
                                 getNextRace(); // Ottieni la prossima gara
                             }
                         };
+
+                        // Call a PHP script to do the requires
+                        var xhr2 = new XMLHttpRequest();
+                        xhr2.open("GET", "updateAPIs.php", true);
+                        xhr2.send();
                     } else {
                         countdownElement.textContent = "La gara è iniziata!";
                     }
@@ -613,7 +622,6 @@ require 'API_updater/tableUpdater.php';
             <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.pkgd.min.js" integrity="sha512-achKCfKcYJg0u0J7UDJZbtrffUwtTLQMFSn28bDJ1Xl9DWkl/6VDT3LMfVTo09V51hmnjrrOTbtg4rEgg0QArA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
             <script src="hamburger.js"></script>
-
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.pkgd.min.js" integrity="sha512-achKCfKcYJg0u0J7UDJZbtrffUwtTLQMFSn28bDJ1Xl9DWkl/6VDT3LMfVTo09V51hmnjrrOTbtg4rEgg0QArA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     </body>
