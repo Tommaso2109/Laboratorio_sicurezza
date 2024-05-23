@@ -1,11 +1,18 @@
 <?php
+require 'API_updater/flag_api.php';
+require 'API_updater/gare_api.php';
+require 'API_updater/laps_api.php';
+require 'API_updater/pit_api.php';
+require 'API_updater/ruote_api.php';
+require 'API_updater/sessioni_api.php';
+require 'API_updater/team_radio.php';
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 $url = "https://api.openf1.org/v1/position?session_key=latest"; // API URL
 
-//print_r($url . "\n");
-
+print_r($url . "\n");
 // Initialize cURL
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
@@ -56,9 +63,21 @@ if (curl_errno($ch)) {
             $driverdata = $result->fetch_assoc();
         
             if ($driverdata) {
-                $stmt = $conn->prepare("UPDATE ultimaGara SET posizione = ?, nome = ?, scuderia = ?, driver_number = ? WHERE driver_number = ?");
-                $stmt->bind_param("issii", $info['position'], $driverdata['full_name'], $driverdata['team_name'], $info['driver'], $driver_number); // "issi" indicates the variable types are integer, string, string, integer.
+                // Aggiorna la tabella fanta
+                $stmt = $conn->prepare("UPDATE fanta SET gare = gare + 1 WHERE driver_number = ?");
+                $stmt->bind_param("i", $driver_number);
                 $stmt->execute();
+
+                if ($info['position'] == 1) {
+                    $stmt = $conn->prepare("UPDATE fanta SET vittorie = vittorie + 1 WHERE driver_number = ?");
+                    $stmt->bind_param("i", $driver_number);
+                    $stmt->execute();
+                } elseif ($info['position'] == 2 || $info['position'] == 3) {
+                    $stmt = $conn->prepare("UPDATE fanta SET podi = podi + 1 WHERE driver_number = ?");
+                    $stmt->bind_param("i", $driver_number);
+                    $stmt->execute();
+                }
+                
             }
         }
 

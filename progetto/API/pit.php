@@ -20,7 +20,7 @@
             SELECT 
                 DriverData.full_name, 
                 pitData.pit_duration,
-                (SELECT COUNT(*) FROM pitData p WHERE p.driver_number = DriverData.driver_number AND p.meeting_key = (SELECT MAX(meeting_key) FROM pitData) AND p.pit_duration IS NOT NULL) as number_of_stops,
+                (SELECT DISTINCT COUNT(*) FROM pitData p WHERE p.driver_number = DriverData.driver_number AND p.meeting_key = (SELECT MAX(meeting_key) FROM pitData) AND p.pit_duration IS NOT NULL) as number_of_stops,
                 pitData.meeting_key
             FROM 
                 DriverData 
