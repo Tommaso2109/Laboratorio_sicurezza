@@ -1,3 +1,4 @@
+
 <?php 
 session_start(); // Start the session at the beginning of your file 
 ?>
@@ -111,7 +112,11 @@ session_start(); // Start the session at the beginning of your file
                     echo '<div class="grid-item">' . htmlspecialchars($row['num_segnalazioni']) . '</div>';
                     echo '<div class="grid-item"><form method="post" action="incremento_ban.php">';
                     echo '<input type="hidden" name="username" value="'.$row['username'].'">';
-                    echo '<button type="submit" class="button1">banna</button>';
+                    if($row['ban'] ==1){
+                       echo' <button type="submit" class="button1">sbanna</button>';
+                    }else{
+                        echo '<button type="submit" class="button1">banna</button>';
+                    }
                     echo '</form> </div>';
                 }
                 echo '</div>';
