@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 
 $url = "https://api.openf1.org/v1/laps?meeting_key=latest"; // JSONPlaceholder API URL
 
-print_r($url . "\n");
+//print_r($url . "\n");
 // Initialize cURL
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
@@ -18,21 +18,21 @@ $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 if (curl_errno($ch)) {
     // cURL error
-    echo 'cURL error: ' . curl_error($ch);
+    //echo 'cURL error: ' . curl_error($ch);
 } else {
     if ($status >= 200 && $status < 300) {
         // Successful response
         $data = json_decode($response, true); // Assuming the API returns a JSON
 
         // Print the data
-        echo "Decoded Data: <br>";
-        echo '<pre>';
-        print_r($data);
-        echo '</pre>';
+        //echo "Decoded Data: <br>";
+        //echo '<pre>';
+        //print_r($data);
+        //echo '</pre>';
     } elseif ($status == 500) {
-        echo "The server encountered an internal error. Please try again later.";
+        //echo "The server encountered an internal error. Please try again later.";
     } else {
-        echo "An error occurred. HTTP Status Code: " . $status;
+        //echo "An error occurred. HTTP Status Code: " . $status;
     }
 }
 
@@ -60,15 +60,28 @@ foreach ($data as $row) {
     $duration_sector_2 = $row['duration_sector_2'];
     $duration_sector_3 = $row['duration_sector_3'];
     $lap_number = $row['lap_number'];
+    $is_pit_out_lap = $row['is_pit_out_lap'];
 
-    // Query SQL per inserire i dati nel database
-    $sql = "INSERT INTO lapsdata (meeting_key, session_key, driver_number, st_speed, lap_duration, duration_sector_1, duration_sector_2, duration_sector_3, lap_number) VALUES ('$meeting_key', '$session_key', '$driver_number', '$st_speed', '$lap_duration', '$duration_sector_1', '$duration_sector_2', '$duration_sector_3', '$lap_number')";
+    // Verifica se il record esiste già
+    $checkSql = "SELECT * FROM lapsdata WHERE meeting_key = '$meeting_key' AND session_key = '$session_key' AND driver_number = '$driver_number'";
+    $result = $conn->query($checkSql);
+
+    $sql = "INSERT INTO lapsdata (meeting_key, session_key, driver_number, st_speed, lap_duration, duration_sector_1, duration_sector_2, duration_sector_3, lap_number, is_pit_out_lap) 
+        VALUES ('$meeting_key', '$session_key', '$driver_number', '$st_speed', '$lap_duration', '$duration_sector_1', '$duration_sector_2', '$duration_sector_3', '$lap_number', '$is_pit_out_lap')
+        ON DUPLICATE KEY UPDATE
+        st_speed = VALUES(st_speed),
+        lap_duration = VALUES(lap_duration),
+        duration_sector_1 = VALUES(duration_sector_1),
+        duration_sector_2 = VALUES(duration_sector_2),
+        duration_sector_3 = VALUES(duration_sector_3),
+        lap_number = VALUES(lap_number),
+        is_pit_out_lap = VALUES(is_pit_out_lap)";
 
     // Esegui la query
     if ($conn->query($sql) === TRUE) {
-        echo "New record created successfully";
+        //echo "Operation performed successfully";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        //echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
 

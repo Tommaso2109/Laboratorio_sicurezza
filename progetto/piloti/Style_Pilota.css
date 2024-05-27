@@ -279,7 +279,9 @@ body::-webkit-scrollbar{
     .menu li a{display: block;}
     .menu li span{display: none;}
     .menu label a {display: block;}
-    
+    body{
+        background-color: white;
+    }
 
     .menu--open{right:-30%;}
     .hamburger{ 

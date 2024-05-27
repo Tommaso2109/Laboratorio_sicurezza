@@ -1,5 +1,6 @@
 <?php 
 session_start(); // Start the session at the beginning of your file 
+require 'API_updater/tableUpdater.php';
 ?>
 
 <!DOCTYPE php>
@@ -172,12 +173,24 @@ session_start(); // Start the session at the beginning of your file
             if($scuderia == "Kick Saubern")$immagineScuderia = 'kicksaubern-removebg-preview.png';
             if($scuderia == "Haas")$immagineScuderia = 'haas-removebg-preview.png';
 
+            // Dividi il nome e il cognome
+            $parts1 = explode(" ", $pilota1);
+            $parts2 = explode(" ", $pilota2);
+
+            // Converte il cognome in maiuscolo
+            $parts1[1] = strtoupper($parts1[1]);
+            $parts2[1] = strtoupper($parts2[1]);
+
+            // Ricombina il nome e il cognome
+            $pilota1 = implode(" ", $parts1);
+            $pilota2 = implode(" ", $parts2);
+
             //Punteggi
             $puntiPilota1Gara = "0";
             $puntiPilota2Gara = "0";
             $moltiplicatoreScuderiaGara = "1";
 
-            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara";
+            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara ORDER BY posizione";
             $result = $conn->query($sql); 
             if ($result->num_rows > 0) {    
                 $puntixposizione = array(25, 18, 15, 12, 10, 8, 6, 4, 2, 1);
@@ -204,9 +217,6 @@ session_start(); // Start the session at the beginning of your file
                         $puntiPilota2Gara += $puntixposizione[$posizione-1];
                         if($fastLap)$puntiPilota2Gara += 3;
                     }
-
-                    
-
                 }
                 $puntiPilota1Gara *= $moltiplicatoreScuderiaGara;
                 $puntiPilota2Gara *= $moltiplicatoreScuderiaGara;
@@ -397,26 +407,8 @@ session_start(); // Start the session at the beginning of your file
                                             }
                                         }
         echo '                          </table>
-                                    </div>';
-                                   // Ottieni il valore del campo moderatore per l'utente corrente
-                                   $sql = "SELECT moderatore FROM utenti WHERE username = ?";
-                                   $stmt = $conn->prepare($sql);
-                                   $stmt->bind_param('s', $user);
-                                   $stmt->execute();
-                                   $result = $stmt->get_result();
-                                   $row = $result->fetch_assoc();
-   
-                                   $moderatore = $row['moderatore'];
-   
-                                   // Esegui un'azione diversa in base al valore di moderatore
-                                   if ($moderatore == 0) {
-                                       // Esegui un'azione quando moderatore è 0
-                                       echo '<li><a href="segnala_utenti.php" class="button3">SEGNALA UTENTI</a></li>';
-                                   } else if ($moderatore == 1) {
-                                       // Esegui un'azione quando moderatore è 1
-                                       echo '<li><a href="ban_utenti.php" class="button3">BANNA UTENTI</a></li>';
-                                   };      
-           echo                 '</div>
+                                    </div>
+                            </div>
                 
                             </div>
                             <div class="grid-container-squad">
@@ -598,8 +590,10 @@ session_start(); // Start the session at the beginning of your file
                     // Controlla se sono passati tre giorni dalla gara
                     var threeDaysAfter = new Date(targetDate);
                     threeDaysAfter.setDate(threeDaysAfter.getDate() + 3);
+                    threeDaysAfter.setHours(0, 0, 0, 0);
                     console.log("Now: " + now + "Tempo Rimanente: " + timeLeft + "Tre giorni rimanenti: "+ threeDaysAfter);
                     if (now >= threeDaysAfter) {
+
                         var xhr = new XMLHttpRequest();
                         xhr.open("GET", "deletePrevGara.php", true);
                         xhr.send();
@@ -608,6 +602,11 @@ session_start(); // Start the session at the beginning of your file
                                 getNextRace(); // Ottieni la prossima gara
                             }
                         };
+
+                        // Call a PHP script to do the requires
+                        var xhr2 = new XMLHttpRequest();
+                        xhr2.open("GET", "updateAPIs.php", true);
+                        xhr2.send();
                     } else {
                         countdownElement.textContent = "La gara è iniziata!";
                     }
@@ -621,7 +620,6 @@ session_start(); // Start the session at the beginning of your file
             <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.pkgd.min.js" integrity="sha512-achKCfKcYJg0u0J7UDJZbtrffUwtTLQMFSn28bDJ1Xl9DWkl/6VDT3LMfVTo09V51hmnjrrOTbtg4rEgg0QArA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
             <script src="hamburger.js"></script>
-
 
             <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.pkgd.min.js" integrity="sha512-achKCfKcYJg0u0J7UDJZbtrffUwtTLQMFSn28bDJ1Xl9DWkl/6VDT3LMfVTo09V51hmnjrrOTbtg4rEgg0QArA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     </body>

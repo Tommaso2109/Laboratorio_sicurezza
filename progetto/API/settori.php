@@ -10,10 +10,18 @@
     // Get data from the database
     $pilota = $db->real_escape_string($_GET['pilota']); // Assicurati che la variabile sia sicura per l'uso in una query SQL
 
-    $result = $db->query("SELECT DISTINCT f.driver_number, f.message, d.full_name 
-                          FROM flagsdata f 
-                          JOIN driverdata d ON f.driver_number = d.driver_number 
-                          WHERE d.full_name = '$pilota'");
+    $result = $db->query("
+        SELECT DISTINCT f.driver_number, f.message, d.full_name 
+        FROM flagsdata f 
+        JOIN driverdata d ON f.driver_number = d.driver_number 
+        JOIN sessionidata s ON f.meeting_key = s.meeting_key
+        WHERE d.full_name = '$pilota'
+        AND s.meeting_key = (
+            SELECT MAX(meeting_key) 
+            FROM sessionidata
+        ) 
+        AND s.session_name = 'Race'
+    ");
 
     // Check if the query was successful
     if ($result === false) {

@@ -111,12 +111,19 @@ if (isset($_SESSION['username'])) {
         <div class= "container">
 
             <div class="hero">
-                <div class="hero__content ">
-                    <h1 class = "big-text">Formula 1 For Fun </h1>
+                <div class="content">
+                    <div class ="content__container">
+                        <h1 class = "content__container__text">Formula 1 For </h1>
+                        <ul class="content__container__list">
+                            <li class="content__container__list__item">Fun</li>
+                            <li class="content__container__list__item">Everybody</li>
+                            <li class="content__container__list__item">Friends</li>
+                            <li class="content__container__list__item">You &lt;3</li>
+                        </ul>
+                    </div>
                 </div>
                 <video autoplay muted loop id="video">
                     <source src="media/home_video.mp4" type="video/mp4">
-        
                 </video>
             </div>
 
@@ -143,7 +150,7 @@ if (isset($_SESSION['username'])) {
                 </div> 
 
                 <div class="poster__img">
-                    <img src="media/stats.avif">
+                    <img src="media/gridIndex.jpeg">
                 </div>
             </div>
             <div class="poster2 mt-3">
@@ -432,6 +439,21 @@ if (isset($_SESSION['username'])) {
                 </div>
             </div>
 
+            <div class="poster mt-0">
+                <div class="poster__content" ">
+                    <h1>Leclerc e suo padre</h1>
+                    <p>Leclerc perse il padre il 20 giugno 2017, stroncato a 54 anni da una lunga malattia. 
+                       Appena quattro giorni dopo, il diciannovenne monegasco dominava la gara di Formula 2 con una prestazione maiuscola. 
+                       Charles rivela di non aver mai scartato l'idea di correre in quel fine settimana: “Mio padre era il mio fan numero uno”.</p>
+                </div> 
+
+                <div class="poster__img">
+                    <video height="700" style="margin-top: 40px;" controls>
+                        <source src="media/LeclerPadreMonaco.mp4" type="video/mp4">
+                    </video>
+                    </video>                
+                </div>
+            </div>
 
             <div class="poster mt-2">
                 <div class="poster__content" >
