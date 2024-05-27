@@ -8,12 +8,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 die('Errore di connessione (' . $conn->connect_errno . ') ' . $conn->connect_error);
             }
 
+            $sql = "SELECT ban FROM utenti WHERE username = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('s', $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            
+    if($row['ban'] == 0){
     $sql = "UPDATE utenti SET ban = 1 WHERE username = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('s', $username);
     $stmt->execute();
     // Reindirizza l'utente alla pagina "segnala utente"
     header('Location: pagina_personale.php');
+    }
+    else{
+        $sql = "UPDATE utenti SET ban = 0 WHERE username = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        // Reindirizza l'utente alla pagina "segnala utente"
+        header('Location: pagina_personale.php'); 
+    }
     exit;
 
 }

@@ -87,6 +87,7 @@ foreach ($data as $row) {
     $checkResult = $conn->query($checkSql);
 
     if ($checkResult->num_rows > 0) {
+
         // Se la session_key corrisponde a una sessione 'Race' e la meeting_key è la massima meeting_key, inserisci i dati nel database
         $stmt->bind_param("ssisissisi", $category, $date, $driver_number, $flag, $lap_number, $meeting_key, $message, $scope, $sector, $session_key);
         if ($stmt->execute()) {

@@ -39,6 +39,44 @@ body::-webkit-scrollbar{
 
 
 /*header*/
+header{
+    font-family: "Amatic SC", sans-serif;
+}
+
+body{
+    margin: 0;
+    overflow-y: scroll;
+    background-color: #1f1e1e;
+}
+
+body::-webkit-scrollbar{
+    display: none;
+}
+
+.button{
+    padding: 13px 18px; 
+    background: rgba(19, 19, 19, 0.877); 
+    color: white; 
+    border-radius: 4px;
+    display: flex;
+    text-decoration: none;
+    margin-right: 20px;
+}
+.button1{
+    padding: 15px 15px; 
+    background: black; 
+    color: white; 
+    border-radius: 4px;
+    display: inline-block;
+    text-decoration: none;
+
+}
+
+#userImage{
+    border-radius: 25%;
+}
+
+/*header*/
 .header{
     display: flex;
     z-index: 3;
@@ -56,6 +94,11 @@ body::-webkit-scrollbar{
     transform: translateY(-28px);
 }
 
+.logo2 {
+    transform: scale(0.6) translateY(-35px);
+    margin-top: -40px;
+}
+
 .menu{
     align-self: center;
     z-index: 0;
@@ -70,6 +113,7 @@ body::-webkit-scrollbar{
     margin: 0;
     padding: 0;
     list-style-type: none;
+    font-size: 15px;
 }
 .menu a
 {
@@ -102,9 +146,9 @@ body::-webkit-scrollbar{
 }
 
 .menu li li { border:none; width: 250px;}
-.menu li li a { padding:10px 3px;}
-
-
+.menu li li a { padding:10px 3px; font-size: 18px;}
+.menu li ul span{font-size: 20px;}
+.menu label a {color: white; padding: 15px;display:none}
 
 /*piloti*/
 
@@ -265,7 +309,6 @@ body::-webkit-scrollbar{
     height: auto;
     border-radius: 100%;
 }
-
 .menu li a img{
     display: none;
 }
@@ -275,11 +318,12 @@ body::-webkit-scrollbar{
 
 @media(max-width:900px){
     .r-l{display: none}
-    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 230%;z-index: 2;}
+    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 350%;z-index: 2;}
     .menu li {display: block;}
     .menu li a{display: block;}
     .menu li span{display: none;}
     .menu label a {display: block;}
+    
     
 
     .menu--open{right:-30%;}
@@ -298,9 +342,11 @@ body::-webkit-scrollbar{
         display: block;
         width: 20%;
         height: auto;
+        border-radius: 20px;
 
     }
 }
+
 
 /*content*/
 

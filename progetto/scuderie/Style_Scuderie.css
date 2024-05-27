@@ -5,6 +5,7 @@
 .normal-text{font-size: 20px;}
 .small-text{font-size: 14px;}
   
+
 body {
 
 overflow: hidden;
@@ -48,6 +49,7 @@ body::-webkit-scrollbar{
     position: fixed;
     height: 150px;
     background:linear-gradient(1deg, rgba(0,0,0,0.9), rgba(170, 4, 4, 0.9), rgba(112,1,1,1));
+    font-family:  "Amatic SC", sans-serif;;
 }
 
 .logo{
@@ -101,7 +103,8 @@ body::-webkit-scrollbar{
 }
 
 .menu li li { border:none; width: 250px;}
-.menu li li a { padding:10px 3px;}
+.menu li li a { padding:10px 3px; font-size: 18px;}
+.menu li ul span{font-size: 20px;}
 
 
 

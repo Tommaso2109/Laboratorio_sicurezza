@@ -5,6 +5,11 @@
 .normal-text{font-size: 20px;}
 .small-text{font-size: 14px;}
 
+*{
+    font-family: "Amatic SC", sans-serif;
+}
+
+
 body{
     color: white;
     background: #42455a;
@@ -101,7 +106,7 @@ body::-webkit-scrollbar{
 }
 
 .menu li li { border:none; width: 250px;}
-.menu li li a { padding:10px 3px;}
+.menu li li a { padding:10px 3px; font-size: 18px;}
 
 
 

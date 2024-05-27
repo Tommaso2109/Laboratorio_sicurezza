@@ -58,6 +58,7 @@ foreach ($data as $row) {
     $pit_duration = $row['pit_duration'];
     $session_key = $row['session_key'];
 
+
     // Prima di inserire, controlla se la session_key corrisponde a una sessione con nome 'Race' e se meeting_key è il massimo meeting_key
     $checkSql = "SELECT * FROM sessioniData WHERE session_key = ? AND session_name = 'Race' AND meeting_key = (SELECT MAX(meeting_key) FROM sessioniData)";
     $stmt = $conn->prepare($checkSql);

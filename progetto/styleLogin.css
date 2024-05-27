@@ -1,3 +1,9 @@
+*{
+    font-family: "Amatic SC", sans-serif;
+}
+
+
+
 body {
     display: flex;
     justify-content: center;
@@ -50,6 +56,8 @@ form {
 .box img {
     width: 200px; /* Adjust as needed */
     height: auto; /* Keeps the aspect ratio */
+    margin-top: 20px;
+    margin-bottom: -30px;
 }
 
 label {
@@ -93,6 +101,8 @@ label {
     position:relative;
     bottom: 15px;
     margin-right: 280px;
+    margin-right: 200px;
+    margin-top: -30px;
     
 }
 
@@ -147,5 +157,17 @@ label {
 @media(max-width:900px){
     .box{
         width: 85%;
+    }
+
+    .registetr{
+        margin-right: 190px;
+    }
+
+    .botton-login{
+        margin-left: 260px;;
+    }
+
+    form{
+        margin-bottom: -35px;;
     }
 }

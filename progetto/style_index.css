@@ -6,7 +6,6 @@
 .small-text{font-size: 14px;}
   
 
-
 /* Animations*/
 @keyframes fadeIn {
     0% {opacity: 0;}
@@ -29,6 +28,10 @@
 }
 
 /* Body and components*/
+*{
+    font-family: "Amatic SC", sans-serif;
+}
+
 body{
     margin: 0;
     overflow-y: scroll;
@@ -123,7 +126,8 @@ body::-webkit-scrollbar{
 }
 
 .menu li li { border:none; width: 250px;}
-.menu li li a { padding:10px 3px;}
+.menu li li a { padding:10px 3px; font-size: 18px;}
+.menu li ul span{font-size: 20px;}
 .menu label a {color: white; padding: 15px;display:none}
 
 /*piloti*/
@@ -345,6 +349,8 @@ body::-webkit-scrollbar{
     padding: 30px;
     z-index: 1;
     color: #FFFFFF;
+    font-weight: 1000;
+    font-style: normal;
 }
 .content {
     position: relative;

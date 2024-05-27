@@ -1,3 +1,4 @@
+
 <?php 
 session_start(); // Start the session at the beginning of your file 
 ?>
@@ -10,6 +11,9 @@ session_start(); // Start the session at the beginning of your file
         <title>FormulaForFun</title>
         <link rel="stylesheet" href="style_ban.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.min.css" integrity="sha512-fJcFDOQo2+/Ke365m0NMCZt5uGYEWSxth3wg2i0dXu7A1jQfz9T4hdzz6nkzwmJdOdkcS8jmy2lWGaRXl+nFMQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
     </head>
 
     <body>
@@ -111,7 +115,11 @@ session_start(); // Start the session at the beginning of your file
                     echo '<div class="grid-item">' . htmlspecialchars($row['num_segnalazioni']) . '</div>';
                     echo '<div class="grid-item"><form method="post" action="incremento_ban.php">';
                     echo '<input type="hidden" name="username" value="'.$row['username'].'">';
-                    echo '<button type="submit" class="button1">banna</button>';
+                    if($row['ban'] ==1){
+                       echo' <button type="submit" class="button1">sbanna</button>';
+                    }else{
+                        echo '<button type="submit" class="button1">banna</button>';
+                    }
                     echo '</form> </div>';
                 }
                 echo '</div>';
