@@ -33,6 +33,9 @@ if (isset($_SESSION['username'])) {
         <title>FormulaForFun</title>
         <link rel="stylesheet" href="style_index.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.min.css" integrity="sha512-fJcFDOQo2+/Ke365m0NMCZt5uGYEWSxth3wg2i0dXu7A1jQfz9T4hdzz6nkzwmJdOdkcS8jmy2lWGaRXl+nFMQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
     </head>
 
     <body>
@@ -49,7 +52,7 @@ if (isset($_SESSION['username'])) {
                     <label><a href="loginStart.php" id="loginButton" class="menu-text">Login</a></label>
                     <label><a href="register.html" id="registerButton" class="menu-text">Register</a></label>
                 <?php endif; ?>
-                <li><a href="stats.php" class="menu-text">Stats</a></li>
+                <li><a href="API/statisticheApi.php" class="menu-text">Stats</a></li>
                 <li><a href="piloti.php" class="menu-text">Piloti</a>
                     <ul>
                         <li><a href="piloti/verstappen.php">Max Verstappen</a></li> 
@@ -111,12 +114,19 @@ if (isset($_SESSION['username'])) {
         <div class= "container">
 
             <div class="hero">
-                <div class="hero__content ">
-                    <h1 class = "big-text">Formula 1 For Fun </h1>
+                <div class="content">
+                    <div class ="content__container">
+                        <h1 class = "content__container__text">Formula 1 For </h1>
+                        <ul class="content__container__list">
+                            <li class="content__container__list__item">Fun</li>
+                            <li class="content__container__list__item">Everybody</li>
+                            <li class="content__container__list__item">Friends</li>
+                            <li class="content__container__list__item">You &lt;3</li>
+                        </ul>
+                    </div>
                 </div>
                 <video autoplay muted loop id="video">
                     <source src="media/home_video.mp4" type="video/mp4">
-        
                 </video>
             </div>
 
@@ -143,7 +153,7 @@ if (isset($_SESSION['username'])) {
                 </div> 
 
                 <div class="poster__img">
-                    <img src="media/stats.avif">
+                    <img src="media/gridIndex.jpeg">
                 </div>
             </div>
             <div class="poster2 mt-3">
@@ -432,6 +442,21 @@ if (isset($_SESSION['username'])) {
                 </div>
             </div>
 
+            <div class="poster mt-0">
+                <div class="poster__content" ">
+                    <h1>Leclerc e suo padre</h1>
+                    <p>Leclerc perse il padre il 20 giugno 2017, stroncato a 54 anni da una lunga malattia. 
+                       Appena quattro giorni dopo, il diciannovenne monegasco dominava la gara di Formula 2 con una prestazione maiuscola. 
+                       Charles rivela di non aver mai scartato l'idea di correre in quel fine settimana: “Mio padre era il mio fan numero uno”.</p>
+                </div> 
+
+                <div class="poster__img">
+                    <video height="700" style="margin-top: 40px;" controls>
+                        <source src="media/LeclerPadreMonaco.mp4" type="video/mp4">
+                    </video>
+                    </video>                
+                </div>
+            </div>
 
             <div class="poster mt-2">
                 <div class="poster__content" >

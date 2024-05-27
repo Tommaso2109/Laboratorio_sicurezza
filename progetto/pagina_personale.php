@@ -12,6 +12,9 @@ require 'API_updater/tableUpdater.php';
         <title>FormulaForFun</title>
         <link rel="stylesheet" href="Style_pagina_personale.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.min.css" integrity="sha512-fJcFDOQo2+/Ke365m0NMCZt5uGYEWSxth3wg2i0dXu7A1jQfz9T4hdzz6nkzwmJdOdkcS8jmy2lWGaRXl+nFMQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
     </head>
     <body>
         <div class="header">
@@ -190,7 +193,7 @@ require 'API_updater/tableUpdater.php';
             $puntiPilota2Gara = "0";
             $moltiplicatoreScuderiaGara = "1";
 
-            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara";
+            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara ORDER BY posizione";
             $result = $conn->query($sql); 
             if ($result->num_rows > 0) {    
                 $puntixposizione = array(25, 18, 15, 12, 10, 8, 6, 4, 2, 1);
@@ -217,9 +220,6 @@ require 'API_updater/tableUpdater.php';
                         $puntiPilota2Gara += $puntixposizione[$posizione-1];
                         if($fastLap)$puntiPilota2Gara += 3;
                     }
-
-                    
-
                 }
                 $puntiPilota1Gara *= $moltiplicatoreScuderiaGara;
                 $puntiPilota2Gara *= $moltiplicatoreScuderiaGara;
@@ -410,8 +410,26 @@ require 'API_updater/tableUpdater.php';
                                             }
                                         }
         echo '                          </table>
-                                    </div>
-                            </div>
+                                    </div>';
+                                        // Ottieni il valore del campo moderatore per l'utente corrente
+                                        $sql = "SELECT moderatore FROM utenti WHERE username = ?";
+                                        $stmt = $conn->prepare($sql);
+                                        $stmt->bind_param('s', $user);
+                                        $stmt->execute();
+                                        $result = $stmt->get_result();
+                                        $row = $result->fetch_assoc();
+
+                                        $moderatore = $row['moderatore'];
+
+                                        // Esegui un'azione diversa in base al valore di moderatore
+                                        if ($moderatore == 0) {
+                                            // Esegui un'azione quando moderatore è 0
+                                            echo '<a href="segnala_utenti.php" class="button3">SEGNALA UTENTI</a>';
+                                        } else if ($moderatore == 1) {
+                                            // Esegui un'azione quando moderatore è 1
+                                            echo '<a href="ban_utenti.php" class="button3">BANNA UTENTI</a>';
+                                        };      
+        echo                 '</div>
                 
                             </div>
                             <div class="grid-container-squad">
@@ -503,7 +521,7 @@ require 'API_updater/tableUpdater.php';
                                             }
                                         }
         echo '                          </table>
-                                    </div>
+                                    </div>+
                                 </div>
                             </div>
                             <div class="grid-container-squad">
@@ -593,6 +611,7 @@ require 'API_updater/tableUpdater.php';
                     // Controlla se sono passati tre giorni dalla gara
                     var threeDaysAfter = new Date(targetDate);
                     threeDaysAfter.setDate(threeDaysAfter.getDate() + 3);
+                    threeDaysAfter.setHours(0, 0, 0, 0);
                     console.log("Now: " + now + "Tempo Rimanente: " + timeLeft + "Tre giorni rimanenti: "+ threeDaysAfter);
                     if (now >= threeDaysAfter) {
 
