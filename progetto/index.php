@@ -52,7 +52,7 @@ if (isset($_SESSION['username'])) {
                     <label><a href="loginStart.php" id="loginButton" class="menu-text">Login</a></label>
                     <label><a href="register.html" id="registerButton" class="menu-text">Register</a></label>
                 <?php endif; ?>
-                <li><a href="stats.php" class="menu-text">Stats</a></li>
+                <li><a href="API/statisticheApi.php" class="menu-text">Stats</a></li>
                 <li><a href="piloti.php" class="menu-text">Piloti</a>
                     <ul>
                         <li><a href="piloti/verstappen.php">Max Verstappen</a></li> 
