@@ -16,28 +16,6 @@ $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 session_start();
-//Email detailes
-function getUserEmail($accessToken) {
-    $url = 'https://api.github.com/user/emails';
-    $options = [
-        'http' => [
-            'header' => "User-Agent: MyClient/1.0\r\nAuthorization: token " . $accessToken,
-        ],
-    ];
-    $context = stream_context_create($options);
-    $response = file_get_contents($url, false, $context);
-    $emails = json_decode($response);
-
-    foreach ($emails as $email) {
-        if ($email->primary && $email->verified) {
-            return $email->email;
-        }
-    }
-
-    return null;
-}
-
-$email = getUserEmail($accessToken);
 
 // get the user's details
 
@@ -144,7 +122,7 @@ if (isset($user)) {
         }
     }else{
         $defaultImage = $user->avatar_url;
-        print "EMAIL: [" . $email ."]\n";
+        //print "EMAIL: [" . $email ."]\n";
         $sql = "INSERT INTO utenti (username, email, password,profile_image) VALUES ('$user->login', '$email', '','$defaultImage')";
         $connessione->query($sql);
         $query = "SELECT* FROM utenti WHERE username= '$user->login'";
