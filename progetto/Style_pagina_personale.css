@@ -5,15 +5,11 @@
 .normal-text{font-size: 20px;}
 .small-text{font-size: 14px;}
 
-*{
-    font-family: "Amatic SC", sans-serif;
-}
-
-
 body{
     margin: 0;
     overflow-y: scroll;
     background-color: #242323;
+    font-family: "Amatic SC", sans-serif;
 }
 
 body::-webkit-scrollbar{
@@ -51,7 +47,8 @@ body::-webkit-scrollbar{
     border-radius: 4px;
     display: inline-block;
     text-decoration: none;
-
+    font-weight: bold; 
+    font-family: 'Lato', sans-serif;
 }
 .button3:hover{
     background-color:rgba(255, 0, 0, 0.87);
@@ -488,9 +485,10 @@ body::-webkit-scrollbar{
 }
 
 .info{
-    font-size: 50px;
+    font-size: 60px;
     color: white;
     margin-top: 5px;
+    font-weight: bold;
 }
 
 .info-1{
@@ -526,6 +524,8 @@ table{
     margin-left: 1%;
     border-collapse: separate;
     border-spacing: 0 15px;
+    font-weight: bold;
+    font-family: 'Lato', sans-serif;
 }
 table td {
     border: 1px solid #ccc;
@@ -540,7 +540,7 @@ table th{
 }
 
 table tr {
-    background-color: #353535;
+    background-color: #161616;
     font-size: 17px;
     color: white;
     text-align: center;

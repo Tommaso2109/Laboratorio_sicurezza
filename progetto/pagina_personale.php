@@ -427,10 +427,10 @@ require 'API_updater/tableUpdater.php';
                                         // Esegui un'azione diversa in base al valore di moderatore
                                         if ($moderatore == 0) {
                                             // Esegui un'azione quando moderatore è 0
-                                            echo '<li><a href="segnala_utenti.php" class="button3">SEGNALA UTENTI</a></li>';
+                                            echo '<a href="segnala_utenti.php" class="button3">SEGNALA UTENTI</a>';
                                         } else if ($moderatore == 1) {
                                             // Esegui un'azione quando moderatore è 1
-                                            echo '<li><a href="ban_utenti.php" class="button3">BANNA UTENTI</a></li>';
+                                            echo '<a href="ban_utenti.php" class="button3">BANNA UTENTI</a>';
                                         };      
         echo                 '</div>
                 

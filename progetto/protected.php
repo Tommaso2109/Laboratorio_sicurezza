@@ -122,7 +122,7 @@ if (isset($user)) {
         }
     }else{
         $defaultImage = $user->avatar_url;
-        print "EMAIL: [" . $email ."]\n";
+        //print "EMAIL: [" . $email ."]\n";
         $sql = "INSERT INTO utenti (username, email, password,profile_image) VALUES ('$user->login', '$email', '','$defaultImage')";
         $connessione->query($sql);
         $query = "SELECT* FROM utenti WHERE username= '$user->login'";
