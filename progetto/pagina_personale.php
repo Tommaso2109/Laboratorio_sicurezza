@@ -70,8 +70,6 @@ require 'API_updater/tableUpdater.php';
                     </ul>
                 </li>
                 <li><a href="fanta-formula.php" class="menu-text">Fanta-Formula</a></li>
-                <label><a href="login.html" id="loginButton" class="menu-text">Login</a></label>
-                <label><a href="register.html" id="registerButton" class="menu-text">Register</a></label>
             </ul>
 
             <div class="r-l">

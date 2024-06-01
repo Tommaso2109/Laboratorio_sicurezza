@@ -187,5 +187,9 @@ label {
     .box{
         width: 85%;
     }
+
+    .submit-button{
+        margin-left: 200px;
+    }
 }
 

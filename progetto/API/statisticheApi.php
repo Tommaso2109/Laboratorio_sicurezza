@@ -167,6 +167,8 @@ session_start(); // Start the session at the beginning of your file
 
     
 <body>
+
+    
     <div class="header">
         <div class="logo">
             <a href="../index.php" class="box-link"><img src="../media/logo.png" alt=""></a>
@@ -220,8 +222,6 @@ session_start(); // Start the session at the beginning of your file
                 </ul>
             </li>
             <li><a href="../fanta-formula.php" class="menu-text">Fanta-Formula</a></li> 
-            <label><a href="../login.php"class="menu-text">Login</a></label>
-            <label><a href="../register.php"class="menu-text">Register</a></label>
         </ul>
 
         <div class="r-l">
@@ -240,6 +240,14 @@ session_start(); // Start the session at the beginning of your file
             <span></span>
             <span></span>
         </div>
+
+        <!-- Jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.pkgd.min.js" integrity="sha512-achKCfKcYJg0u0J7UDJZbtrffUwtTLQMFSn28bDJ1Xl9DWkl/6VDT3LMfVTo09V51hmnjrrOTbtg4rEgg0QArA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="hamburger.js"></script>
+
     </div>
     <div class="mt-4">
         <div class="grid-container">
@@ -1052,16 +1060,9 @@ session_start(); // Start the session at the beginning of your file
         </div>
     </footer>
     
-    <!-- Jquery-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.pkgd.min.js" integrity="sha512-achKCfKcYJg0u0J7UDJZbtrffUwtTLQMFSn28bDJ1Xl9DWkl/6VDT3LMfVTo09V51hmnjrrOTbtg4rEgg0QArA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script src="../hamburger.js"></script>
+    
 
 
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flickity/3.0.0/flickity.pkgd.min.js" integrity="sha512-achKCfKcYJg0u0J7UDJZbtrffUwtTLQMFSn28bDJ1Xl9DWkl/6VDT3LMfVTo09V51hmnjrrOTbtg4rEgg0QArA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     </body>
 </html>
 

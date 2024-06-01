@@ -1,6 +1,6 @@
 .big-text{font-size: 70px;font-weight: 900;}
 .alf-big-text{font-size: 50px;font-weight: 900;}
-.menu-text{font-size: 30px; font-weight: 700;}
+.menu-text{font-size: 40px; font-weight: 700;}
 .medium-text{font-size: 40px;font-weight: 600;}
 .normal-text{font-size: 20px;}
 .small-text{font-size: 14px;}
@@ -48,18 +48,14 @@ body::-webkit-scrollbar{
     top :0;
     left:0;
     position: fixed;
-    height: 150px;
+    height: 180px;
     background:linear-gradient(1deg, rgba(0,0,0,0.9), rgba(170, 4, 4, 0.9), rgba(112,1,1,1));
 }
 
 .logo{
-    scale: 0.9;
+    scale: 1;
     transform: translateY(-28px);
-}
-
-.logo2 {
-    transform: scale(0.6) translateY(-35px);
-    margin-top: -40px;
+    margin-top: 15px;
 }
 
 .menu{
@@ -76,7 +72,6 @@ body::-webkit-scrollbar{
     margin: 0;
     padding: 0;
     list-style-type: none;
-    font-size: 15px;
 }
 .menu a
 {
@@ -259,6 +254,7 @@ body::-webkit-scrollbar{
     align-self: center;
     padding-left: 40px;
     margin-right: 25px;
+    font-family: 'Lato', sans-serif;
 }
 
 .r-l a:hover {
@@ -272,6 +268,7 @@ body::-webkit-scrollbar{
     height: auto;
     border-radius: 100%;
 }
+
 .menu li a img{
     display: none;
 }
@@ -281,12 +278,11 @@ body::-webkit-scrollbar{
 
 @media(max-width:900px){
     .r-l{display: none}
-    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 350%;z-index: 2;}
+    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 300%;z-index: 2;}
     .menu li {display: block;}
-    .menu li a{display: block;}
+    .menu li a{display: flex;}
     .menu li span{display: none;}
-    .menu label a {display: block;}
-    
+    .menu label a {display: flex;}
     
 
     .menu--open{right:-30%;}
@@ -297,7 +293,7 @@ body::-webkit-scrollbar{
         position: absolute;
         top: 40px;
         right: 30px;
-        z-index: 2;
+        z-index: 800;
     }
     .hamburger span{z-index:2; background: white; height: 3px;width: 100%; display: block;margin-bottom: 5px;}
 
@@ -308,6 +304,7 @@ body::-webkit-scrollbar{
         border-radius: 20px;
 
     }
+    
 }
 
 .green-text {
@@ -322,7 +319,7 @@ body::-webkit-scrollbar{
     /*max-width: 50%;*/
     min-width: 50%;
     margin-left: 25%;
-    margin-top: 160px;
+    margin-top: 185px;
     top :0;
     left:0;
     position: fixed;
@@ -446,8 +443,8 @@ body::-webkit-scrollbar{
     padding: 0;
     border: none;
     cursor: pointer;
-  }
-  .button-squad {
+}
+.button-squad {
     --border-right: 6px;
     --text-stroke-color: rgba(255, 255, 255, 0.663);
     --animation-color: #37FF8B;
@@ -459,9 +456,10 @@ body::-webkit-scrollbar{
     text-transform: uppercase;
     color: transparent;
     -webkit-text-stroke: 1px var(--text-stroke-color);
-  }
+    position: relative;
+}
 
-  .hover-text {
+.hover-text {
     position: absolute;
     box-sizing: border-box;
     content: attr(data-text);
@@ -472,12 +470,18 @@ body::-webkit-scrollbar{
     overflow: hidden;
     transition: 0.5s;
     -webkit-text-stroke: 1px var(--animation-color);
-  }
+}
 
-  .button-squad:hover .hover-text {
+.button-squad:hover .actual-text{
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.button-squad:hover .hover-text {
     width: 100%;
-    filter: drop-shadow(0 0 23px var(--animation-color))
-  }
+    filter: drop-shadow(0 0 23px var(--animation-color));
+    color: var(--animation-color);
+}
 
 
 .content-bunner{
@@ -791,7 +795,7 @@ body::-webkit-scrollbar{
         min-width: 10%;
         max-width: 90%;
         margin-left: 5%;
-        margin-top: 160px;    
+        margin-top: 185px;    
     }
 
     .banner-text{
@@ -818,6 +822,22 @@ body::-webkit-scrollbar{
     .content-bunner{
         width: 100%;
         margin-left: -40px;
+    }
+
+    .button-squad{
+        padding:0;
+        background: rgba(19, 19, 19);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        margin-right: 20px;
+        font-size: 15px;
+        letter-spacing: 0px;
+        text-transform: none;
+    }
+
+    .hover-text{
+        display: none;
     }
 }
 
