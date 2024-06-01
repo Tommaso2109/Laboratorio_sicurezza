@@ -535,5 +535,3 @@ if(!isset($_SESSION['username'])) {
 
     <script src="fanta-formula.js"></script>
 </html>
-
-

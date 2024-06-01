@@ -4,7 +4,6 @@
 .medium-text{font-size: 40px;font-weight: 600;}
 .normal-text{font-size: 20px;}
 .small-text{font-size: 14px;}
-  
 
 /* Animations*/
 @keyframes fadeIn {
@@ -350,6 +349,7 @@ body::-webkit-scrollbar{
     font-weight: 1000;
     font-style: normal;
 }
+
 .content {
     position: relative;
     top: 15%;

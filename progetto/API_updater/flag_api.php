@@ -45,6 +45,7 @@ if ($conn->connect_error) {
 }
 
 // Prepara la query SQL
+// Prepara la query SQL
 $stmt = $conn->prepare("
     INSERT INTO flagsData (category, date, driver_number, flag, lap_number, meeting_key, message, scope, sector, session_key)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -73,6 +74,7 @@ foreach ($data as $row) {
         }
     }
 
+    
     $date = $row['date'];
     $lap_number = $row['lap_number'];
     $meeting_key = $row['meeting_key'];
@@ -82,13 +84,12 @@ foreach ($data as $row) {
     $scope = $row['scope'];
     $sector = $row['sector'];
 
-    // Prima di inserire, controlla se la session_key corrisponde a una sessione con nome 'Race' e se la meeting_key è la massima meeting_key
-    $checkSql = "SELECT * FROM sessioniData WHERE session_key = $session_key AND session_name = 'Race' AND meeting_key = (SELECT MAX(meeting_key) FROM sessioniData)";
+    // Prima di inserire, controlla se la session_key corrisponde a una sessione con nome 'Race'
+    $checkSql = "SELECT * FROM sessioniData WHERE session_key = $session_key AND session_name = 'Race'";
     $checkResult = $conn->query($checkSql);
 
     if ($checkResult->num_rows > 0) {
-
-        // Se la session_key corrisponde a una sessione 'Race' e la meeting_key è la massima meeting_key, inserisci i dati nel database
+        // Se la session_key corrisponde a una sessione 'Race', inser i dati nel database
         $stmt->bind_param("ssisissisi", $category, $date, $driver_number, $flag, $lap_number, $meeting_key, $message, $scope, $sector, $session_key);
         if ($stmt->execute()) {
             //echo "New record created or updated successfully";
