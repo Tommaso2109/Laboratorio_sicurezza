@@ -24,9 +24,6 @@ class Register {
         $email = mysqli_real_escape_string($this->conn, $email);
         $pass = mysqli_real_escape_string($this->conn, $pass);
 
-        // Hash the password
-        $pass = password_hash($pass, PASSWORD_DEFAULT);
-
         // Check if the user already exists
         $sql = "SELECT * FROM utenti WHERE username = '$user'";
         $result = $this->conn->query($sql);

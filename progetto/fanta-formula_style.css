@@ -373,6 +373,7 @@ body::-webkit-scrollbar{
 }
 
 #popup-text {
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     text-align: center;
     margin-top: -55px;
     margin-bottom: 20px;
@@ -421,7 +422,7 @@ body::-webkit-scrollbar{
     margin-right: 30px;
     
 }
-
+/*
 .button-squad{
     padding: 13px 18px; 
     background: rgba(19, 19, 19, 0.877); 
@@ -437,7 +438,48 @@ body::-webkit-scrollbar{
     background-color:rgba(255, 102, 0, 0.87);
     color: #ffffff;
     text-decoration: none;
-}
+}*/
+
+.button-squad {
+    margin: 0;
+    height: auto;
+    background: transparent;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+  }
+  .button-squad {
+    --border-right: 6px;
+    --text-stroke-color: rgba(255, 255, 255, 0.663);
+    --animation-color: #37FF8B;
+    letter-spacing: 3px;
+    text-decoration: none;
+    font-size: var(--fs-size);
+    font-family: "Arial";
+    position: relative;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--text-stroke-color);
+  }
+
+  .hover-text {
+    position: absolute;
+    box-sizing: border-box;
+    content: attr(data-text);
+    color: var(--animation-color);
+    width: 0%;
+    inset: 0;
+    border-right: var(--border-right) solid var(--animation-color);
+    overflow: hidden;
+    transition: 0.5s;
+    -webkit-text-stroke: 1px var(--animation-color);
+  }
+
+  .button-squad:hover .hover-text {
+    width: 100%;
+    filter: drop-shadow(0 0 23px var(--animation-color))
+  }
+
 
 .content-bunner{
     align-self: center;
@@ -762,7 +804,7 @@ body::-webkit-scrollbar{
         display: none;
     }
 
-    .button-squad{
+    .button-squad-squad{
         padding: 3px 5px; 
         font-size: 15px;
     }
