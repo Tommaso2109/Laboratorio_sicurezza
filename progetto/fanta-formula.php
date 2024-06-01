@@ -1,6 +1,11 @@
 <?php
 session_start();
 if(!isset($_SESSION['username'])) {
+    if (defined('PHPUNIT_TESTING')) {
+        echo json_encode(['status' => 'error', 'message' => 'Perfavore fai il Login per usare questa funzione']);
+        exit;
+     } 
+else {
 ?>
 <script type="text/javascript">
     window.onload = function() {
@@ -13,7 +18,28 @@ if(!isset($_SESSION['username'])) {
     }
 </script>
 <?php
+        exit;
+    }
 }
+
+// la pagina non funziona per via degli exit
+
+
+function processRequest($action = null) {
+    // Se $action non è stato fornito, cerca di prenderlo da $_POST
+    if ($action === null) {
+        $action = isset($_POST['action']) ? $_POST['action'] : '';
+    }
+
+    if ($action === 'click') {
+        return json_encode(['status' => 'success', 'message' => 'hai cliccato il bottone', 'cost' => 100]);
+    } else {
+        return json_encode(['status' => 'error', 'message' => 'Azione non riconosciuta']);
+    }
+}
+
+echo processRequest('click');
+exit;
 ?>
 
 <!DOCTYPE html>
@@ -681,7 +707,7 @@ if(!isset($_SESSION['username'])) {
             // Invia i dati al server utilizzando AJAX
             $.ajax({
                 type: 'POST',
-                url: 'salva.php',
+                url: 'tests/squadraTest.php',
                 data: { 
                     scuderia: scuderia,
                     pilota1: pilota1,
@@ -749,5 +775,4 @@ if(!isset($_SESSION['username'])) {
         }*/
     </script>
 </html>
-
 

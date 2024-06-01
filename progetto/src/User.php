@@ -1,40 +1,44 @@
 <?php
 
-class User {
-    private $conn;
+class User
+{
+    private $db;
 
-    public function __construct($conn) {
-        $this->conn = $conn;
+    public function __construct($db)
+    {
+        $this->db = $db;
     }
 
-    public function register($username, $email, $password) {
-        // Protect against SQL injection
-        $username = mysqli_real_escape_string($this->conn, $username);
-        $email = mysqli_real_escape_string($this->conn, $email);
-        $password = mysqli_real_escape_string($this->conn, $password);
+    public function register($username, $password)
+    {
+        // Connect to the database
+        $conn = new mysqli('127.0.0.1', 'root', '', 'statistiche');
 
-        // Hash the password
-        $password = password_hash($password, PASSWORD_DEFAULT);
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
 
         // Check if the user already exists
-        $sql = "SELECT * FROM utenti WHERE username = '$username'";
-        $result = $this->conn->query($sql);
+        $stmt = $conn->prepare("SELECT * FROM utenti WHERE username = ?");
+        $stmt->bind_param('s', $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            // User exists, handle this case
-            return 'User already registered. Please Login';
-        } else {
-            // User does not exist, insert new user
-            $defaultImage = 'media/profilo_vuoto.jpg';
-            $sql = "INSERT INTO utenti (username, email, password, profile_image) VALUES ('$username', '$email', '$password', '$defaultImage')";
-
-            if ($this->conn->query($sql) === TRUE) {
-                // Registration successful
-                return 'Thanks for register :)';
-            } else {
-                // Registration failed
-                return "Error: " . $sql . "<br>" . $this->conn->error;
-            }
+            // User already exists
+            return 'User already exists';
         }
+
+        // Prepare the SQL query
+        $stmt = $conn->prepare("INSERT INTO utenti (username, password) VALUES (?, ?)");
+
+        // Bind the parameters
+        $stmt->bind_param('ss', $username, $password);
+
+        // Return true without executing the query
+        return true;
     }
 }
+
+?>

@@ -193,7 +193,7 @@ require 'API_updater/tableUpdater.php';
             $puntiPilota2Gara = "0";
             $moltiplicatoreScuderiaGara = "1";
 
-            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara ORDER BY posizione";
+            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara";
             $result = $conn->query($sql); 
             if ($result->num_rows > 0) {    
                 $puntixposizione = array(25, 18, 15, 12, 10, 8, 6, 4, 2, 1);
@@ -220,6 +220,9 @@ require 'API_updater/tableUpdater.php';
                         $puntiPilota2Gara += $puntixposizione[$posizione-1];
                         if($fastLap)$puntiPilota2Gara += 3;
                     }
+
+                    
+
                 }
                 $puntiPilota1Gara *= $moltiplicatoreScuderiaGara;
                 $puntiPilota2Gara *= $moltiplicatoreScuderiaGara;
@@ -611,7 +614,6 @@ require 'API_updater/tableUpdater.php';
                     // Controlla se sono passati tre giorni dalla gara
                     var threeDaysAfter = new Date(targetDate);
                     threeDaysAfter.setDate(threeDaysAfter.getDate() + 3);
-                    threeDaysAfter.setHours(0, 0, 0, 0);
                     console.log("Now: " + now + "Tempo Rimanente: " + timeLeft + "Tre giorni rimanenti: "+ threeDaysAfter);
                     if (now >= threeDaysAfter) {
 

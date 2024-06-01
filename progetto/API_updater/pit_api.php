@@ -58,9 +58,8 @@ foreach ($data as $row) {
     $pit_duration = $row['pit_duration'];
     $session_key = $row['session_key'];
 
-
-    // Prima di inserire, controlla se la session_key corrisponde a una sessione con nome 'Race' e se meeting_key è il massimo meeting_key
-    $checkSql = "SELECT * FROM sessioniData WHERE session_key = ? AND session_name = 'Race' AND meeting_key = (SELECT MAX(meeting_key) FROM sessioniData)";
+    // Prima di inserire, controlla se la session_key corrisponde a una sessione con nome 'Race'
+    $checkSql = "SELECT * FROM sessioniData WHERE session_key = ? AND session_name = 'Race'";
     $stmt = $conn->prepare($checkSql);
     $stmt->bind_param("s", $session_key);
     $stmt->execute();
@@ -68,18 +67,17 @@ foreach ($data as $row) {
 
     if ($checkResult->num_rows > 0) {
         // Query SQL per inserire i dati nel database
-        $pit_duration_float = floatval($pit_duration);
-        if ($pit_duration !== null && $pit_duration_float != 999.99 && $date !== null && $driver_number !== null && $lap_number !== null && $meeting_key !== null && $session_key !== null) {
-            $sql = "INSERT INTO pitData (date, driver_number, lap_number, meeting_key, pit_duration, session_key) 
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    ";
-            // Esegui la query qui
-    
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("siisss", $date, $driver_number, $lap_number, $meeting_key, $pit_duration, $session_key);
-            if (!$stmt->execute()) {
-                //echo "Error: " . $stmt->error;
-            }
+        $sql = "INSERT INTO pitData (date, driver_number, lap_number, meeting_key, pit_duration, session_key) 
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+        date = VALUES(date),
+        lap_number = VALUES(lap_number),
+        pit_duration = VALUES(pit_duration)";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("siisss", $date, $driver_number, $lap_number, $meeting_key, $pit_duration, $session_key);
+        if (!$stmt->execute()) {
+            //echo "Error: " . $stmt->error;
         }
     }
 }
