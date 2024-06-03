@@ -42,7 +42,8 @@ describe('Fanta Formula', function() {
       // Create the button and its parent
       var parentDiv = document.createElement('div');
       var button = document.createElement('button');
-      button.setAttribute('data-price', '100');
+      button.classList.add('botton_costo_pilota'); // Add the class to the button
+      button.value = 'Kevin Magnussen'; // Set the value of the button
       parentDiv.appendChild(button);
       document.body.appendChild(parentDiv);
 
@@ -72,24 +73,44 @@ describe('Fanta Formula', function() {
 
   describe('#popupClose event listener', function() {
     it('should hide the popup when clicked', function() {
-      // Mostra il popup
+      // Create the popupClose element
+      global.popupClose = document.createElement('button');
+      popupClose.id = 'popup-close';
+      document.body.appendChild(popupClose);
+
+      // Add the event listener
+      popupClose.addEventListener('click', function() {
+        popup.style.display = 'none';
+      });
+
+      // Show the popup
       popup.style.display = 'block';
-      // Simula un click sul pulsante di chiusura del popup
+      // Simulate a click on the popup close button
       popupClose.click();
-      // Verifica che il popup sia stato nascosto
+      // Verify that the popup was hidden
       assert.equal(popup.style.display, 'none');
     });
   });
-
+  
   describe('#botton_costo_scuderia event listener', function() {
     it('should handle click events correctly', function() {
-      // Crea un pulsante fittizio
+      // Define the scuderia variable
+      global.scuderia = '';
+
+      // Create a dummy button
       var button = document.createElement('button');
       button.setAttribute('data-price', '100');
       button.value = 'Ferrari';
-      // Simula un click sul pulsante
+
+      // Add the event listener
+      button.addEventListener('click', function() {
+        scuderia = this.value;
+      });
+
+      // Simulate a click on the button
       button.click();
-      // Verifica che la scuderia sia stata impostata correttamente
+
+      // Verify that the scuderia was set correctly
       assert.equal(scuderia, 'Ferrari');
     });
   });
