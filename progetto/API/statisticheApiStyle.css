@@ -11,7 +11,7 @@
     overflow: hidden;
     margin: 0;
     overflow-y: scroll;
-    font-family: "Amatic SC", sans-serif;
+   
   }
   
 body::-webkit-scrollbar{
@@ -48,6 +48,7 @@ body::-webkit-scrollbar{
     position: fixed;
     height: 180px;
     background:linear-gradient(1deg, rgba(0,0,0,0.9), rgba(170, 4, 4, 0.9), rgba(112,1,1,1));
+     font-family: "Amatic SC", sans-serif;
 }
 
 .logo{
@@ -571,7 +572,7 @@ body::-webkit-scrollbar{
         
         .col-1, .col-2, .col-3, .col-4,.col-5 {
             width: 22.5%; 
-            font-size: 20px;
+            font-size: 13px;
         }
         
     }
