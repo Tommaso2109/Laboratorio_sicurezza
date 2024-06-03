@@ -474,7 +474,7 @@ body::-webkit-scrollbar{
 
 .button-squad:hover .actual-text{
     opacity: 0;
-    transition: 0.5s;
+    transition: 0.8s;
 }
 
 .button-squad:hover .hover-text {
