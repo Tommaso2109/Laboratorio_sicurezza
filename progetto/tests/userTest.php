@@ -45,32 +45,25 @@
             
             public function testToggleBan() {
                 $username = 'testUser';
-                $initialBanStatus = 1; // Example initial ban status
-                $expectedNewBanStatus = 0; // Expected new ban status after toggle
+                $initialBanStatus = 1; // esempio stato ban iniziale
+                $expectedNewBanStatus = 0; // come dovrebbe essere il ban dopo il toggle
             
                 $stmt1 = $this->createMock(mysqli_stmt::class);
                 $stmt2 = $this->createMock(mysqli_stmt::class);
                 $resultMock = $this->createMock(mysqli_result::class);
             
-                // Setup mock for mysqli::prepare to return stmt1 and stmt2 mocks on consecutive calls
                 $this->mysqli->method('prepare')->willReturnOnConsecutiveCalls($stmt1, $stmt2);
-            
-                // Setup mock for stmt1::get_result to return resultMock
+
                 $stmt1->method('get_result')->willReturn($resultMock);
-            
-                // Setup mock for resultMock::fetch_assoc to return initial ban status
+        
                 $resultMock->method('fetch_assoc')->willReturn(['ban' => $initialBanStatus]);
-            
-                // Setup mock for stmt2::execute to return true
+    
                 $stmt2->method('execute')->willReturn(true);
-            
-                // Create User object with the mocked mysqli object
+
                 $user = new User($this->mysqli);
             
-                // Call toggleBan and capture the result
                 $result = $user->toggleBan($username, $this->conn);
             
-                // Assertions to verify the result
                 $this->assertIsArray($result);
                 $this->assertTrue($result['success']);
                 $this->assertEquals($expectedNewBanStatus, $result['newBanStatus']);
