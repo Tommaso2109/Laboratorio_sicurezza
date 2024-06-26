@@ -1,38 +1,33 @@
-// Seleziona il popup e il suo testo
-var popup = document.getElementById('popup');
-var popupText = document.getElementById('popup-text');
 
 // Seleziona il bottone per chiudere il popup
 var popupClose = document.getElementById('popup-close');
-
-// Seleziona l'elemento delle scelte
-var choicesElement = document.getElementById('scelte');
 
 // Aggiungi un event listener per chiudere il popup
 popupClose.addEventListener('click', function() {
     popup.style.display = 'none';
 });
 
-// Inizializza i contatori di piloti e scuderie
-
-
+// Inizializza i contatori di piloti e scuderia
 var counters = {
     piloti: 0,
-    scuderie: 0
+    scuderia: 0
 };
 
-function handleClick(button, counterName, maxCount) {
+function handleClick(button, counterName, maxCount, counters) {
+    var popup = document.getElementById('popup');
+    var popupText = document.getElementById('popup-text');
     var price = Number(button.getAttribute('data-price'));
     var totalElement = document.getElementById('total');
     var totalText = totalElement.textContent;
     var total = Number(totalText.replace(/[^0-9.-]+/g,""));
+    var choicesElement = document.getElementById('scelte');
     var parentDiv = button.parentElement;
 
     if (parentDiv.classList.contains('disabled')) {
         total += price;
+        counters[counterName]--;
         parentDiv.classList.remove('disabled');
         parentDiv.classList.remove('clicked');
-        counters[counterName]--;
     } else {
         if (price > total) {
             popupText.textContent = "Non hai abbastanza budget per questo acquisto!";
@@ -51,7 +46,7 @@ function handleClick(button, counterName, maxCount) {
     }
 
     totalElement.textContent = "Budget disponibile: " + total + " $";
-    choicesElement.textContent = "Piloti: " + counters.piloti + "/2, Scuderie: " + counters.scuderie + "/1";
+    choicesElement.textContent = "Piloti: " + counters.piloti + "/2, Scuderia: " + counters.scuderia + "/1";
     return true;
 }
 
@@ -62,7 +57,7 @@ var pilota2 = null;
 
 document.querySelectorAll('.botton_costo_scuderia').forEach(function(button) {
     button.addEventListener('click', function() {
-        handleClick(button, 'scuderie', 1);
+        handleClick(button, 'scuderia', 1, counters);
         scuderia = this.value; // Salva il valore del pulsante
         console.log(scuderia); // Stampa il valore del pulsante per verificare che sia corretto
     });
@@ -70,7 +65,7 @@ document.querySelectorAll('.botton_costo_scuderia').forEach(function(button) {
 
 document.querySelectorAll('.botton_costo_pilota').forEach(function(button) {
     button.addEventListener('click', function() {
-        var success = handleClick(button, 'piloti', 2);
+        var success = handleClick(button, 'piloti', 2, counters);
         if (success) {
             var value = this.value;
 
@@ -87,29 +82,8 @@ document.querySelectorAll('.botton_costo_pilota').forEach(function(button) {
     });
 });
 
-
-
 $('.button-squad').on('click', function(e) {
     e.preventDefault();
-
-    //ALLERT DA LEVARE QUANDO FINITO
-    //alert('Scuderia: ' + scuderia + '\nPilota 1: ' + pilota1 + '\nPilota 2: ' + pilota2);
-
-    // Controlla se uno qualsiasi dei dati è null o vuoto
-    if (!scuderia || !pilota1 || !pilota2) {
-        var popup = document.getElementById('popup');
-        var popupText = document.getElementById('popup-text');
-        popupText.textContent = 'Per favore, completa tutti i campi.';
-        popup.style.display = 'block';
-        return;
-    }
-    else if (counters.scuderie != 1 || counters.piloti != 2) {
-        var popup = document.getElementById('popup');
-        var popupText = document.getElementById('popup-text');
-        popupText.textContent = 'Per favore, completa tutti i campi.';
-        popup.style.display = 'block';
-        return;
-    }
     //! Controllo partita gia iniziata
     var targetDate;
     // Funzione per ottenere la prossima gara dal database
@@ -123,31 +97,21 @@ $('.button-squad').on('click', function(e) {
         }
     }
     getNextRace();
-    
-        var now = new Date().getTime();
-        var targetDateTimestamp = new Date(targetDate).getTime();
-        var timeLeft = targetDateTimestamp - now;
-        var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-        var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-        
-        if (timeLeft < 0) {
-            // Controlla se sono passati tre giorni dalla gara
-            var threeDaysAfter = new Date(targetDate);
-            threeDaysAfter.setDate(threeDaysAfter.getDate() + 3);
-            console.log("Now: " + now + "Tempo Rimanente: " + timeLeft + "Tre giorni rimanenti: "+ threeDaysAfter);
-            if (now < threeDaysAfter) {
-                var popup = document.getElementById('popup1');
-                var popupText = document.getElementById('popup1-text');
-                popupText.textContent = 'Non puoi cambiare la squadra se la partita è iniziata.';
-                popup.style.display = 'block';
-                return;
-            }
-        }
-    
 
-    // Invia i dati al server utilizzando AJAX
+    var now = new Date().getTime();
+    var targetDateTimestamp = new Date(targetDate).getTime();
+    var timeLeft = targetDateTimestamp - now;
+    var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+
+    
+    confermaSquadra(scuderia, pilota1, pilota2, counters, targetDate, timeLeft);
+});
+// Ore buttate 12 h
+function ajaxFunction(scuderia, pilota1, pilota2) {
     $.ajax({
         type: 'POST',
         url: 'salva.php',
@@ -160,18 +124,10 @@ $('.button-squad').on('click', function(e) {
             //response = JSON.parse(response.replaceAll(/\s*<.*/gs,""));
             
             // Pulisci la risposta rimuovendo tutto dopo il primo carattere di chiusura graffa
-            var cleanResponse = response.substring(0, response.indexOf('}') + 1);
+            //var cleanResponse = response.substring(0, response.indexOf('}') + 1);
 
-            console.log('Clean server response:', cleanResponse);
+            //console.log('Clean server response:', cleanResponse);
 
-            try {
-                // Prova a fare il parse della risposta pulita
-                response = JSON.parse(cleanResponse);
-            } catch (error) {
-                // Se c'è un errore nel fare il parse, stampa l'errore
-                console.error('Error parsing JSON:', error);
-                return;
-            }
             if (response.error) {
                 var popup = document.getElementById('popup1');
                 var popupText = document.getElementById('popup1-text');
@@ -185,35 +141,51 @@ $('.button-squad').on('click', function(e) {
             
         },
         error: function(jqXHR, textStatus, errorThrown) {
-            // Questo blocco di codice viene eseguito quando la richiesta AJAX fallisce
-            console.log('AJAX error:', textStatus, errorThrown);
-        }
-    });
-});
-
-//NON CAMBIARE ^
-/*
-function saveTeam(scuderia, pilota1, pilota2) {
-    $.ajax({
-        type: "POST",
-        url: "salva.php",
-        data: { scuderia: scuderia, pilota1: pilota1, pilota2: pilota2 },
-        dataType: "json", 
-        success: function(response) {
-            if (response.error) {
-                var popup = document.getElementById('popup1');
-                var popupText = document.getElementById('popup1-text');
-                //alert('PopUpText: ' + popupText);
-                popupText.textContent = response.error;
-                popup.style.display = 'block';
+            console.log('AJAX error: Status', jqXHR.status, 'Status Text', jqXHR.statusText, 'Error Thrown', errorThrown, 'Text Status', textStatus);
+        
+            if (errorThrown instanceof SyntaxError) {
+                console.log('Errore di sintassi nei dati. Verifica che l\'URL e i dati inviati siano corretti.');
+            } else if (jqXHR.status === 0) {
+                console.log('La richiesta AJAX è stata interrotta o ha incontrato un problema di CORS.');
             } else {
-                // Gestisci il caso di successo qui
-                window.location.href = "index.php";
+                console.log('Si è verificato un errore non gestito specificamente. Controlla i log per maggiori dettagli.');
             }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            // Gestisci gli errori di rete o di server qui
         }
     });
-}*/
-module.exports = handleClick;
+}
+
+function confermaSquadra(scuderia, pilota1, pilota2, counters, targetDate, timeLeft) {
+    var popup = document.getElementById('popup');
+    var popupText = document.getElementById('popup-text');
+
+    // Validate selections
+    if (!scuderia || !pilota1 || !pilota2 || counters.scuderia != 1 || counters.piloti != 2) {
+        popupText.textContent = 'Per favore, completa tutti i campi.';
+        popup.style.display = 'block';
+        return;
+    }
+
+    // Check if the selection is made after the race has started
+    if (timeLeft < 0) {
+        var now = new Date().getTime();
+        var threeDaysAfter = new Date(targetDate);
+        threeDaysAfter.setDate(threeDaysAfter.getDate() + 3);
+
+        if (now < threeDaysAfter.getTime()) {
+            popup = document.getElementById('popup1');
+            popupText = document.getElementById('popup1-text');
+            popupText.textContent = 'Non puoi cambiare la squadra se la partita è iniziata.';
+            popup.style.display = 'block';
+            return;
+        }
+    }
+    ajaxFunction(scuderia, pilota1, pilota2);
+    
+}
+
+// Export the functions for use in other parts of the application
+module.exports = {
+    handleClick,
+    confermaSquadra
+};
+

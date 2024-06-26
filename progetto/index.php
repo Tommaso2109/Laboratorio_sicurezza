@@ -149,7 +149,7 @@ if (isset($_SESSION['username'])) {
                         <br> Ricorda che se i tuoi piloti entrano nella top-10 faranno punti che poi verranno moltiplicati dalla scuderia da te scelta,
                         e allo largo della stagione quei punti possono fare la differenza tra battere i tuoi amici o rimanere indietro.
                     </p>
-                    <a href="stats.php" class="button">Leggi di più</a>
+                    <a href="API/statisticheApi.php" class="button">Leggi di più</a>
                 </div> 
 
                 <div class="poster__img">

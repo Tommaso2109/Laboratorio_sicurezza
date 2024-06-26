@@ -18,64 +18,63 @@ session_start(); // Start the session at the beginning of your file
 
     <body>
         <div class="header">
-            <div class="logo">
-                <a href="index.php"><img src="media/logo.png" alt=""></a>
-            </div>
+                <div class="logo">
+                <a href="index.php" class="box-link"><img src="media/logo.png" alt=""></a>
+                </div>
 
-            <ul class="menu">
+                <ul class="menu">
+                    <?php if(isset($_SESSION['username'])): ?>
+                        <li><a href="pagina_personale.php" id="userImage"><img src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a></li>
+                        <label><a href="logout.php" id="logoutButton" class="menu-text">LOGOUT</a></label>
+                    <?php else: ?>
+                        <label><a href="loginStart.php" id="loginButton" class="menu-text">Login</a></label>
+                        <label><a href="register.html" id="registerButton" class="menu-text">Register</a></label>
+                    <?php endif; ?>
+                    <li><a href="API/statisticheApi.php" class="menu-text">Stats</a></li>
+                    <li><a href="piloti.php" class="menu-text">Piloti</a>
+                        <ul>
+                            <li><a href="piloti/verstappen.php">Max Verstappen</a></li> 
+                            <li><a href="piloti/perez.php">Sergio Perez</a></li> 
+                            <li><a href="piloti/Hamilton.php">Lewis Hamilton</a></li> 
+                            <li><a href="piloti/Russel.php">George Russell</a></li> 
+                            <li><a href="piloti/Leclerc.php">Charles Leclerc</a></li>
+                            <li><a href="piloti/sainz.php">Carlos Sainz</a></li> 
+                            <li><a href="piloti/Norris.php">Lando Norris</a></li>
+                            <li><a href="piloti/piastri.php">Oscar Piastri</a></li>
+                            <li><a href="piloti/Alonso.php">Fernando Alonso</a></li>
+                            <li><a href="piloti/Stroll.php">Lance Stroll</a></li>                     
+                            <li><a href="piloti/Gasly.php">Pierre Gasly</a></li>
+                            <li><a href="piloti/Ocon.php">Esteban Ocon</a></li>
+                            <li><a href="piloti/Albon.php">Alexander Albon</a></li>
+                            <li><a href="piloti/Sargeant.php">Logan Sargeant</a></li>
+                            <li><a href="piloti/Tsunoda.php">Yuki Tsunoda</a></li>
+                            <li><a href="piloti/Ricciardo.php">Daniel Ricciardo</a></li>
+                            <li><a href="piloti/bottas.php">Valterri Bottas</a></li>
+                            <li><a href="piloti/Zhou.php">Ghuanyu Zhou</a></li>
+                            <li><a href="piloti/Hulkenberg.php">Nico Hulkenberg</a></li>
+                            <li><a href="piloti/magnussen.php">Kevin Magnussen</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="fanta-formula.php" class="menu-text">Fanta-Formula</a></li>
+                </ul>
+
+                <div class="r-l">
                 <?php if(isset($_SESSION['username'])): ?>
-                    <li><a href="pagina_personale.php" id="userImage"><img src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a></li>
-                    <label><a href="logout.php" id="logoutButton" class="menu-text">LOGOUT</a></label>
-                <?php else: ?>
-                    <label><a href="login.html" id="loginButton" class="menu-text">Login</a></label>
-                    <label><a href="register.html" id="registerButton" class="menu-text">Register</a></label>
-                <?php endif; ?>
-                <li><a href="stats.php" class="menu-text">Stats</a></li>
-                <li><a href="piloti.php" class="menu-text">Piloti</a>
-                    <ul>
-                        <li><a href="piloti/verstappen.php">Max Verstappen</a></li> 
-                        <li><a href="piloti/perez.php">Sergio Perez</a></li> 
-                        <li><a href="piloti/Hamilton.php">Lewis Hamilton</a></li> 
-                        <li><a href="piloti/Russel.php">George Russell</a></li> 
-                        <li><a href="piloti/Leclerc.php">Charles Leclerc</a></li>
-                        <li><a href="piloti/sainz.php">Carlos Sainz</a></li> 
-                        <li><a href="piloti/Norris.php">Lando Norris</a></li>
-                        <li><a href="piloti/piastri.php">Oscar Piastri</a></li>
-                        <li><a href="piloti/Alonso.php">Fernando Alonso</a></li>
-                        <li><a href="piloti/Stroll.php">Lance Stroll</a></li>                     
-                        <li><a href="piloti/Gasly.php">Pierre Gasly</a></li>
-                        <li><a href="piloti/Ocon.php">Esteban Ocon</a></li>
-                        <li><a href="piloti/Albon.php">Alexander Albon</a></li>
-                        <li><a href="piloti/Sargeant.php">Logan Sargeant</a></li>
-                        <li><a href="piloti/Tsunoda.php">Yuki Tsunoda</a></li>
-                        <li><a href="piloti/Ricciardo.php">Daniel Ricciardo</a></li>
-                        <li><a href="piloti/bottas.php">Valterri Bottas</a></li>
-                        <li><a href="piloti/Zhou.php">Ghuanyu Zhou</a></li>
-                        <li><a href="piloti/Hulkenberg.php">Nico Hulkenberg</a></li>
-                        <li><a href="piloti/magnussen.php">Kevin Magnussen</a></li>
-                    </ul>
-                </li>
-                <li><a href="fanta-formula.php" class="menu-text">Fanta-Formula</a></li> 
-                <label><a href="login.php"class="menu-text">Login</a></label>
-                <label><a href="register.php"class="menu-text">Register</a></label>
-            </ul>
+                            <a href="pagina_personale.php" id="userImage"><img src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a>
+                            <a href="logout.php" id="logoutButton" class="button">LOGOUT</a>
+                        <?php else: ?>
+                            <a href="login.html" id="loginButton" class="button">LOGIN</a>
+                            <p>
+                            <a href="register.html" id="registerButton" class="button">REGISTER</a>
+                        <?php endif; ?>
+                </div>
 
-            <div class="r-l">
-            <?php if(isset($_SESSION['username'])): ?>
-                    <a href="pagina_personale.php" id="userImage"><img src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a>
-                    <a href="logout.php" id="logoutButton" class="button">LOGOUT</a>
-                <?php else: ?>
-                    <a href="login.html" id="loginButton" class="button">LOGIN</a>
-                    <p>
-                    <a href="register.html" id="registerButton" class="button">REGISTER</a>
-                <?php endif; ?>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
 
         <div class="mt-1">
 
@@ -126,7 +125,7 @@ session_start(); // Start the session at the beginning of your file
                             <h1 class="alf-big-text">Aston Martin </h1>
                             <p class="right-text big-text">5°</p>
                         </div>
-                        <a href="scuderie/AstronMartin.php"><img src="media/AstonMartin-removebg-preview.png" alt=""></a>
+                        <a href="scuderie/AstonMartin.php"><img src="media/AstonMartin-removebg-preview.png" alt=""></a>
                     </div>
                     <div class="poster__img_haas ">
                         <div class="poster__content">

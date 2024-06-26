@@ -70,8 +70,6 @@ require 'API_updater/tableUpdater.php';
                     </ul>
                 </li>
                 <li><a href="fanta-formula.php" class="menu-text">Fanta-Formula</a></li>
-                <label><a href="login.html" id="loginButton" class="menu-text">Login</a></label>
-                <label><a href="register.html" id="registerButton" class="menu-text">Register</a></label>
             </ul>
 
             <div class="r-l">
@@ -220,6 +218,9 @@ require 'API_updater/tableUpdater.php';
                         $puntiPilota2Gara += $puntixposizione[$posizione-1];
                         if($fastLap)$puntiPilota2Gara += 3;
                     }
+
+                    
+
                 }
                 $puntiPilota1Gara *= $moltiplicatoreScuderiaGara;
                 $puntiPilota2Gara *= $moltiplicatoreScuderiaGara;
@@ -611,7 +612,6 @@ require 'API_updater/tableUpdater.php';
                     // Controlla se sono passati tre giorni dalla gara
                     var threeDaysAfter = new Date(targetDate);
                     threeDaysAfter.setDate(threeDaysAfter.getDate() + 3);
-                    threeDaysAfter.setHours(0, 0, 0, 0);
                     console.log("Now: " + now + "Tempo Rimanente: " + timeLeft + "Tre giorni rimanenti: "+ threeDaysAfter);
                     if (now >= threeDaysAfter) {
 

@@ -31,7 +31,7 @@ session_start(); // Start the session at the beginning of your file
                 <label><a href="login.html" id="loginButton" class="menu-text">Login</a></label>
                 <label><a href="register.html" id="registerButton" class="menu-text">Register</a></label>
             <?php endif; ?>
-            <li><a href="stats.php" class="menu-text">Stats</a></li>
+            <li><a href="API/statisticheApi.php" class="menu-text">Stats</a></li>
             <li><a href="scuderie.php" class="menu-text">Scuderie</a>
                 <ul>
                     <span><a href="scuderie/RedBull.php" >Red Bull</a></span>

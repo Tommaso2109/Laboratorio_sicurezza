@@ -26,7 +26,7 @@ SET time_zone = "+00:00";
 --
 -- Struttura della tabella `amici`
 --
-
+DROP TABLE IF EXISTS `amici`;
 CREATE TABLE `amici` (
   `utente` varchar(191) NOT NULL,
   `amico` varchar(191) NOT NULL,
@@ -50,7 +50,7 @@ INSERT INTO `amici` (`utente`, `amico`, `punteggioTotale`, `punteggioStagionale`
 --
 -- Struttura della tabella `driverdata`
 --
-
+DROP TABLE IF EXISTS `driverdata`;
 CREATE TABLE `driverdata` (
   `id` int(11) NOT NULL,
   `broadcast_name` varchar(255) DEFAULT NULL,
@@ -5785,7 +5785,7 @@ INSERT INTO `driverdata` (`id`, `broadcast_name`, `country_code`, `driver_number
 --
 -- Struttura della tabella `fanta`
 --
-
+DROP TABLE IF EXISTS `fanta`;
 CREATE TABLE `fanta` (
   `driver_number` int(191) NOT NULL,
   `cognome` varchar(191) NOT NULL,
@@ -5829,7 +5829,7 @@ INSERT INTO `fanta` (`driver_number`, `cognome`, `posizione`, `gare`, `vittorie`
 --
 -- Struttura della tabella `flagsdata`
 --
-
+DROP TABLE IF EXISTS `flagsdata`;
 CREATE TABLE `flagsdata` (
   `id` int(11) NOT NULL,
   `category` varchar(255) DEFAULT NULL,
@@ -5962,7 +5962,7 @@ INSERT INTO `flagsdata` (`id`, `category`, `date`, `driver_number`, `flag`, `lap
 --
 -- Struttura della tabella `garedata`
 --
-
+DROP TABLE IF EXISTS `garedata`;
 CREATE TABLE `garedata` (
   `circuit_key` int(11) DEFAULT NULL,
   `circuit_short_name` varchar(255) DEFAULT NULL,
@@ -6073,7 +6073,7 @@ INSERT INTO `garedata` (`circuit_key`, `circuit_short_name`, `meeting_key`, `mee
 --
 -- Struttura della tabella `lapsdata`
 --
-
+DROP TABLE IF EXISTS `lapsdata`;
 CREATE TABLE `lapsdata` (
   `id` int(11) NOT NULL,
   `meeting_key` int(11) DEFAULT NULL,
@@ -24745,7 +24745,7 @@ INSERT INTO `lapsdata` (`id`, `meeting_key`, `session_key`, `driver_number`, `st
 --
 -- Struttura della tabella `nextgare`
 --
-
+DROP TABLE IF EXISTS `nextgare`;
 CREATE TABLE `nextgare` (
   `Luogo` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `Data` datetime(6) NOT NULL
@@ -24778,7 +24778,7 @@ INSERT INTO `nextgare` (`Luogo`, `Data`) VALUES
 --
 -- Struttura della tabella `pitdata`
 --
-
+DROP TABLE IF EXISTS `pitdata`;
 CREATE TABLE `pitdata` (
   `id` int(11) NOT NULL,
   `date` datetime DEFAULT NULL,
@@ -24823,7 +24823,7 @@ INSERT INTO `pitdata` (`id`, `date`, `driver_number`, `lap_number`, `meeting_key
 --
 -- Struttura della tabella `prezzi`
 --
-
+DROP TABLE IF EXISTS `prezzi`;
 CREATE TABLE `prezzi` (
   `tipo` varchar(191) NOT NULL,
   `nome` varchar(191) NOT NULL,
@@ -24871,7 +24871,7 @@ INSERT INTO `prezzi` (`tipo`, `nome`, `prezzo`) VALUES
 --
 -- Struttura della tabella `ruotedata`
 --
-
+DROP TABLE IF EXISTS `ruotedata`;
 CREATE TABLE `ruotedata` (
   `id` int(11) NOT NULL,
   `meeting_key` int(11) DEFAULT NULL,
@@ -55122,7 +55122,7 @@ INSERT INTO `ruotedata` (`id`, `meeting_key`, `session_key`, `stint_number`, `dr
 --
 -- Struttura della tabella `scuderie`
 --
-
+DROP TABLE IF EXISTS `scuderie`;
 CREATE TABLE `scuderie` (
   `nome` varchar(191) NOT NULL,
   `position` int(191) NOT NULL,
@@ -55151,7 +55151,7 @@ INSERT INTO `scuderie` (`nome`, `position`, `prezzoP1`, `prezzoP2`) VALUES
 --
 -- Struttura della tabella `sessionidata`
 --
-
+DROP TABLE IF EXISTS `sessionidata`;
 CREATE TABLE `sessionidata` (
   `id` int(11) NOT NULL,
   `session_key` int(11) NOT NULL,
@@ -55243,7 +55243,7 @@ INSERT INTO `sessionidata` (`id`, `session_key`, `year`, `session_name`, `meetin
 --
 -- Struttura della tabella `squadra`
 --
-
+DROP TABLE IF EXISTS `squadra`;
 CREATE TABLE `squadra` (
   `utente` varchar(191) NOT NULL,
   `scuderia` varchar(191) NOT NULL,
@@ -55269,7 +55269,7 @@ INSERT INTO `squadra` (`utente`, `scuderia`, `pilota1`, `pilota2`, `punteggioTot
 --
 -- Struttura della tabella `teamradio`
 --
-
+DROP TABLE IF EXISTS `teamradio`;
 CREATE TABLE `teamradio` (
   `id` int(6) UNSIGNED NOT NULL,
   `session_key` int(6) NOT NULL,
@@ -56543,7 +56543,7 @@ INSERT INTO `teamradio` (`id`, `session_key`, `meeting_key`, `driver_number`, `d
 --
 -- Struttura della tabella `ultimagara`
 --
-
+DROP TABLE IF EXISTS `ultimagara`;
 CREATE TABLE `ultimagara` (
   `posizione` int(191) NOT NULL,
   `nome` varchar(191) NOT NULL,
@@ -56583,7 +56583,7 @@ INSERT INTO `ultimagara` (`posizione`, `nome`, `driver_number`, `scuderia`, `fas
 --
 -- Struttura della tabella `utenti`
 --
-
+DROP TABLE IF EXISTS `utenti`;
 CREATE TABLE `utenti` (
   `username` varchar(191) NOT NULL,
   `email` varchar(191) NOT NULL,

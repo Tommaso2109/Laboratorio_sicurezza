@@ -91,7 +91,7 @@ if(!isset($_SESSION['username'])) {
                     <a href="pagina_personale.php" id="userImage"><img src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a>
                     <a href="logout.php" id="logoutButton" class="button">LOGOUT</a>
                 <?php else: ?>
-                    <a href="login.html" id="loginButton" class="button">LOGIN</a>
+                    <a href="loginStart.php" id="loginButton" class="button">LOGIN</a>
                     <p>
                     <a href="register.html" id="registerButton" class="button">REGISTER</a>
                 <?php endif; ?>
@@ -129,7 +129,8 @@ if(!isset($_SESSION['username'])) {
                     }
                     
                     // Esegui la query SQL
-                    $sql = "SELECT tipo, nome, prezzo FROM prezzi ORDER BY tipo";                    $result = $conn->query($sql);
+                    $sql = "SELECT tipo, nome, prezzo FROM prezzi ORDER BY tipo";                    
+                    $result = $conn->query($sql);
 
                     // Stampa i risultati
                     if ($result->num_rows > 0) {
@@ -535,5 +536,3 @@ if(!isset($_SESSION['username'])) {
 
     <script src="fanta-formula.js"></script>
 </html>
-
-

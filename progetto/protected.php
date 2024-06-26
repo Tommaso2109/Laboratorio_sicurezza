@@ -142,42 +142,6 @@ if (isset($user)) {
 }
 
 
-$connessione = new mysqli('127.0.0.1', 'root', '', 'statistiche');
-
-if (isset($user)) {
-    $username = "$user->login";
-    $query = "SELECT* FROM utenti WHERE username= '$username'";
-
-    $result = mysqli_query ($connessione, $query);
-
-    if (mysqli_num_rows($result)>0){
-        $row = mysqli_fetch_assoc($result);
-        $_SESSION['username'] = $row['username']; // Set the session variable
-        $_SESSION['profile_image'] = $row['profile_image']; // Set the session variable
-        $_SESSION['email'] = $row['email']; // Set the session variable
-        $_SESSION['bestTime'] = $row['record_reaction'];
-        
-    }else{
-        $defaultImage = $user->avatar_url;
-        $sql = "INSERT INTO utenti (username, email, password,profile_image) VALUES ('$user->login', '$email', '','$defaultImage')";
-        $connessione->query($sql);
-        $query = "SELECT* FROM utenti WHERE username= '$user->login'";
-
-        $result = mysqli_query ($connessione, $query);
-        if (mysqli_num_rows($result)>0){
-            $row = mysqli_fetch_assoc($result);
-            $_SESSION['username'] = $row['username']; // Set the session variable
-            $_SESSION['profile_image'] = $row['profile_image']; // Set the session variable
-            $_SESSION['email'] = $row['email']; // Set the session variable
-            $_SESSION['bestTime'] = $row['record_reaction'];
-            
-        }else{
-            echo 'UTENTE NON TROVATO DOPO LA REGISTRAZIONE';
-        }
-    }
-}
-
-
 ?><!DOCTYPE html>
 <html lang="en">
 <head>

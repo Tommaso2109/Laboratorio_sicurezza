@@ -28,7 +28,7 @@ session_start(); // Start the session at the beginning of your file
                 <li><a href="../pagina_personale.php" id="userImage"><img src="<?php echo $_SESSION['profile_image']; ?>" alt="image"></a></li>
                 <label><a href="../logout.php" id="logoutButton" class="menu-text">LOGOUT</a></label>
             <?php else: ?>
-                <label><a href="../login.html" id="loginButton" class="menu-text">LOGIN</a></label>
+                <label><a href="../loginStart.php" id="loginButton" class="menu-text">LOGIN</a></label>
                 <label><a href="../register.html" id="registerButton" class="menu-text">REGISTER</a></label>
             <?php endif; ?>
             <li><a href="../stats.php" class="menu-text">Stats</a></li>
@@ -71,8 +71,7 @@ session_start(); // Start the session at the beginning of your file
                 </ul>
             </li>
             <li><a href="../fanta-formula.php" class="menu-text">Fanta-Formula</a></li> 
-            <label><a href="../login.php"class="menu-text">Login</a></label>
-            <label><a href="../register.php"class="menu-text">Register</a></label>
+            
         </ul>
 
         <div class="r-l">

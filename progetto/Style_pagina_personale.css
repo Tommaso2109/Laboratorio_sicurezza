@@ -1,11 +1,9 @@
 .big-text{font-size: 70px;font-weight: 900;}
 .alf-big-text{font-size: 50px;font-weight: 900;}
-.menu-text{font-size: 30px; font-weight: 700;}
+.menu-text{font-size: 40px; font-weight: 700;}
 .medium-text{font-size: 40px;font-weight: 600;}
 .normal-text{font-size: 20px;}
 .small-text{font-size: 14px;}
-
-
 
 body{
     margin: 0;
@@ -90,6 +88,7 @@ body::-webkit-scrollbar{
 
 
 /*header*/
+/*header*/
 .header{
     display: flex;
     z-index: 3;
@@ -98,13 +97,15 @@ body::-webkit-scrollbar{
     top :0;
     left:0;
     position: fixed;
-    height: 150px;
+    height: 180px;
     background:linear-gradient(1deg, rgba(0,0,0,0.9), rgba(170, 4, 4, 0.9), rgba(112,1,1,1));
+    font-family: "Amatic SC", sans-serif;
 }
 
 .logo{
-    scale: 0.9;
+    scale: 1;
     transform: translateY(-28px);
+    margin-top: 15px;
 }
 
 .menu{
@@ -303,6 +304,7 @@ body::-webkit-scrollbar{
     align-self: center;
     padding-left: 40px;
     margin-right: 25px;
+    font-family: 'Lato', sans-serif;
 }
 
 .r-l a:hover {
@@ -326,11 +328,11 @@ body::-webkit-scrollbar{
 
 @media(max-width:900px){
     .r-l{display: none}
-    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 350%;z-index: 2;}
+    .menu{position: absolute; top: 0; right: -200%; background: rgb(126, 0, 0);height: 300%;z-index: 2;}
     .menu li {display: block;}
-    .menu li a{display: block;}
+    .menu li a{display: flex;}
     .menu li span{display: none;}
-    .menu label a {display: block;}
+    .menu label a {display: flex;}
     
 
     .menu--open{right:-30%;}
@@ -341,7 +343,7 @@ body::-webkit-scrollbar{
         position: absolute;
         top: 40px;
         right: 30px;
-        z-index: 2;
+        z-index: 800;
     }
     .hamburger span{z-index:2; background: white; height: 3px;width: 100%; display: block;margin-bottom: 5px;}
 
@@ -352,8 +354,8 @@ body::-webkit-scrollbar{
         border-radius: 20px;
 
     }
+    
 }
-
 /*content*/
 
 .grid-container {
@@ -405,8 +407,8 @@ body::-webkit-scrollbar{
 
 .grid-container-punti{
     display: grid;
-    grid-template-rows: 100%;
-    grid-template-columns: 100%;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
     border: 2px solid gray;
     
 }

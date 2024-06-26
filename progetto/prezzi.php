@@ -8,7 +8,8 @@
     }
 
     // Esegui la query SQL
-    $sql = "SELECT cognome, posizione, gare, vittorie, podi, fastLap, mediaGriglia, mediaFinale FROM fanta ORDER BY posizione";                    $result = $conn->query($sql);
+    $sql = "SELECT cognome, posizione, gare, vittorie, podi, fastLap, mediaGriglia, mediaFinale FROM fanta ORDER BY posizione";                    
+    $result = $conn->query($sql);
 
     // Stampa i risultati
     if ($result->num_rows > 0) {
