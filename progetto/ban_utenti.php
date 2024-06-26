@@ -111,14 +111,15 @@ session_start(); // Start the session at the beginning of your file
                 echo '<div class="grid-item">  BAN: </div>';
                 // Stampa un elemento grid-item per ciascun utente
                 while($row = $result->fetch_assoc()) {
+                    $usernameForId = htmlspecialchars($row['username']);
                     echo '<div class="grid-item">' . htmlspecialchars($row['username']) . '</div>';
                     echo '<div class="grid-item">' . htmlspecialchars($row['num_segnalazioni']) . '</div>';
                     echo '<div class="grid-item"><form method="post" action="incremento_ban.php">';
                     echo '<input type="hidden" name="username" value="'.$row['username'].'">';
                     if($row['ban'] ==1){
-                       echo' <button type="submit" class="button1">sbanna</button>';
+                       echo' <button type="submit" class="button1" id="control_ban_button_'.$usernameForId.'">sbanna</button>';
                     }else{
-                        echo '<button type="submit" class="button1">banna</button>';
+                        echo '<button type="submit" class="button1" id="control_ban_button_'.$usernameForId.'">banna</button>';
                     }
                     echo '</form> </div>';
                 }

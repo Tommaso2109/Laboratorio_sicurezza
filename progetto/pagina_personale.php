@@ -428,7 +428,7 @@ require 'API_updater/tableUpdater.php';
                                             echo '<a href="segnala_utenti.php" class="button3">SEGNALA UTENTI</a>';
                                         } else if ($moderatore == 1) {
                                             // Esegui un'azione quando moderatore è 1
-                                            echo '<a href="ban_utenti.php" class="button3">BANNA UTENTI</a>';
+                                            echo '<a href="ban_utenti.php" class="button3" id="Ban_button">BANNA UTENTI</a>';
                                         };      
         echo                 '</div>
                 
