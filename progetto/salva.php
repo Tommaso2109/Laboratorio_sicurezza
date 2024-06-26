@@ -1,6 +1,6 @@
 
 <?php
-
+    header('Content-Type: application/json');
     session_start();
     // Stabilisci la connessione al database
     $conn = new mysqli('localhost', 'root', '', 'statistiche');
@@ -24,7 +24,7 @@
         $puntiPilota2Gara = "0";
         $moltiplicatoreScuderiaGara = "1";
 
-        $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara";
+        $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara ORDER BY posizione";
         $result = $conn->query($sql); 
         if ($result->num_rows > 0) {    
             $puntixposizione = array(25, 18, 15, 12, 10, 8, 6, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -74,7 +74,7 @@
                 $stmt->bind_param("sssiis", $scuderia, $pilota1, $pilota2, $punteggioTotale, $prevSquadra, $utente);
             
                 if($stmt->execute()) {
-                    echo json_encode(["success" => "Squadra aggiornata con successo."]);
+                    echo json_encode(["success" => "Squadra salvata con successo."]);
                 } else {
                     echo json_encode(["error" => "Errore: " . $stmt->error]);
                 }

@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('s', $username);
         $stmt->execute();
-        // Reindirizza l'utente alla pagina "segnala utente"
+        // Reindirizza l'utente alla pagina "pagina personale"
         header('Location: pagina_personale.php'); 
     }
     exit;

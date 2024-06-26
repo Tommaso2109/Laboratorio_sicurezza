@@ -129,7 +129,8 @@ if(!isset($_SESSION['username'])) {
                     }
                     
                     // Esegui la query SQL
-                    $sql = "SELECT tipo, nome, prezzo FROM prezzi ORDER BY tipo";                    $result = $conn->query($sql);
+                    $sql = "SELECT tipo, nome, prezzo FROM prezzi ORDER BY tipo";                    
+                    $result = $conn->query($sql);
 
                     // Stampa i risultati
                     if ($result->num_rows > 0) {

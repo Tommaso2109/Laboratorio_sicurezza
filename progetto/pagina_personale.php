@@ -191,7 +191,7 @@ require 'API_updater/tableUpdater.php';
             $puntiPilota2Gara = "0";
             $moltiplicatoreScuderiaGara = "1";
 
-            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara";
+            $sql = "SELECT posizione, nome, scuderia, fastLap FROM ultimagara ORDER BY posizione";
             $result = $conn->query($sql); 
             if ($result->num_rows > 0) {    
                 $puntixposizione = array(25, 18, 15, 12, 10, 8, 6, 4, 2, 1);

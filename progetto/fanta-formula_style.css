@@ -58,6 +58,11 @@ body::-webkit-scrollbar{
     margin-top: 15px;
 }
 
+.logo2 {
+    transform: scale(0.8) translateY(-25px);
+    margin-top: -40px;
+}
+
 .menu{
     align-self: center;
     z-index: 0;
